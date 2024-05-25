@@ -1,42 +1,38 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Newtonsoft.Json;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
-using WebIcecream_FE.Models;
+using WebIcecream_FE_ADMIN.Models;
 
-
-namespace WebIcecream_FE.Controllers
+namespace WebIcecream_FE_ADMIN.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-
+        private readonly HttpClient _httpClient;
         public AuthController(IHttpClientFactory httpClientFactory)
         {
-            _httpClientFactory = httpClientFactory;
+            _httpClient = httpClientFactory.CreateClient();
+            _httpClient.BaseAddress = new Uri("https://localhost:7018/api/Auth/");
         }
 
-        [HttpGet]
+        // Hiển thị form đăng nhập
         public IActionResult Login()
         {
+
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel login)
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return View(login);
             }
-            
-            var client = _httpClientFactory.CreateClient();
-            var json = JsonConvert.SerializeObject(model);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("https://localhost:7018/api/Auth/Login/login", content);
 
+            var json = JsonConvert.SerializeObject(login);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _httpClient.PostAsync("Login/login", content);
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
@@ -49,7 +45,7 @@ namespace WebIcecream_FE.Controllers
                 var userRoleId = GetUserRoleIdFromToken();
 
                 // Kiểm tra xem vai trò có phù hợp không
-                if (userRoleId == 1)
+                if (userRoleId == 2)
                 {
                     // Cập nhật trạng thái đăng nhập sau khi đăng nhập thành công
                     ViewData["IsLoggedIn"] = true;
@@ -65,44 +61,24 @@ namespace WebIcecream_FE.Controllers
             else
             {
                 ModelState.AddModelError("Password", "Invalid password.");
-                return View(model);
+                return View(login);
             }
-  
         }
 
         [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
-
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Logout()
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }   
-
-            var client = _httpClientFactory.CreateClient();
-            var json = JsonConvert.SerializeObject(model);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("https://localhost:7018/api/Auth/Register/register", content);
+            // Gửi yêu cầu đến endpoint 'logout' của API backend để đăng xuất
+            HttpResponseMessage response = await _httpClient.PostAsync("Logout/logout", null);
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Login", "Auth");
+                // Xóa token từ session hoặc cookie
+                HttpContext.Session.Remove("Token");
             }
 
-            ModelState.AddModelError("", "Registration failed");
-            return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Remove("Token");
-            return RedirectToAction("Login", "Auth");
+            return RedirectToAction("Login");
         }
         private int? GetUserRoleIdFromToken()
         {
