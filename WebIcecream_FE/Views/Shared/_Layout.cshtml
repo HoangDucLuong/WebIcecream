@@ -90,9 +90,26 @@
                         <a href="../../Service/Index" class="nav-item nav-link">Service</a>
                         <a href="../../Gallery/Index" class="nav-item nav-link">Gallery</a>
                         <a href="../../Home/Contact" class="nav-item nav-link">Contact</a>
-                        <a href="../../Auth/Login" class="nav-item nav-link">Login</a>
-                        <a href="../../Auth/Register" class="nav-item nav-link">Register</a>
-                        <a href="../../User/Details" class="nav-item nav-link">Profile</a>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" id="accountDropdown" role="button">
+                                Account
+                            </a>
+                            @if (Context.Session.Keys.Contains("Username"))
+                            {
+                                var username = Context.Session.GetString("Username");
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="../../Auth/Login">@username</a>
+                                    <a class="dropdown-item" href="../../Auth/Register">Profile</a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="../../Auth/Login">Login</a>
+                                    <a class="dropdown-item" href="../../Auth/Register">Register</a>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -143,7 +160,20 @@
     <!-- Back to Top -->
     <a href="#" class="btn btn-secondary px-2 back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
+    <style>
+        .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+        }
 
+        .nav-item.dropdown .dropdown-menu {
+            margin-top: 0;
+        }
+
+        .nav-item .dropdown-menu .dropdown-item {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+    </style>
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>

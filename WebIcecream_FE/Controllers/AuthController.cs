@@ -44,6 +44,7 @@ namespace WebIcecream_FE.Controllers
 
                 // Lưu token vào session hoặc cookie
                 HttpContext.Session.SetString("Token", token.Token);
+                HttpContext.Session.SetString("Username", model.Username);
 
                 // Kiểm tra vai trò của người dùng
                 var userRoleId = GetUserRoleIdFromToken();
