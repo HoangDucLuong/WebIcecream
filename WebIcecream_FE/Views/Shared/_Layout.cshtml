@@ -99,7 +99,14 @@
                                 var username = Context.Session.GetString("Username");
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" href="../../Auth/Login">@username</a>
+<<<<<<< HEAD
                                     <a class="dropdown-item" href="../../User/Details">Profile</a>
+=======
+                                    <form id="logoutForm" action="/Auth/Logout" method="post" style="display: none;">
+                                        @Html.AntiForgeryToken() <!-- Nếu bạn sử dụng AntiForgeryToken -->
+                                    </form>
+                                    <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
+>>>>>>> 63466e0f8eda269d292d652fde6cd60f80f239b3
                                 </div>
                             }
                             else

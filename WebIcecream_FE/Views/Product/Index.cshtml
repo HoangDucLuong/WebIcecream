@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<Product>
+@{
     ViewData["Title"] = "Product";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -24,101 +25,21 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-3 col-md-6 mb-4 pb-2">
-                <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
-                    <div class="bg-primary mt-n5 py-3" style="width: 80px;">
-                        <h4 class="font-weight-bold text-white mb-0">$99</h4>
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-3 col-md-6 mb-4 pb-2">
+                    <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
+                        <div class="bg-primary mt-n5 py-3" style="width: 80px;">
+                            <h4 class="font-weight-bold text-white mb-0">@item.price</h4>
+                        </div>
+                        <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
+                            <img class="rounded-circle w-100 h-100" src="~/temp/img/product-1.jpg" style="object-fit: cover;">
+                        </div>
+                        <h5 class="font-weight-bold mb-4">@item.title</h5>
+                        <a href="" class="btn btn-sm btn-secondary">Order Now</a>
                     </div>
-                    <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
-                        <img class="rounded-circle w-100 h-100" src="~/temp/img/product-1.jpg" style="object-fit: cover;">
-                    </div>
-                    <h5 class="font-weight-bold mb-4">Vanilla Ice Cream</h5>
-                    <a href="" class="btn btn-sm btn-secondary">Order Now</a>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 pb-2">
-                <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
-                    <div class="bg-primary mt-n5 py-3" style="width: 80px;">
-                        <h4 class="font-weight-bold text-white mb-0">$99</h4>
-                    </div>
-                    <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
-                        <img class="rounded-circle w-100 h-100" src="~/temp/img/product-2.jpg" style="object-fit: cover;">
-                    </div>
-                    <h5 class="font-weight-bold mb-4">Vanilla Ice Cream</h5>
-                    <a href="" class="btn btn-sm btn-secondary">Order Now</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 pb-2">
-                <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
-                    <div class="bg-primary mt-n5 py-3" style="width: 80px;">
-                        <h4 class="font-weight-bold text-white mb-0">$99</h4>
-                    </div>
-                    <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
-                        <img class="rounded-circle w-100 h-100" src="~/temp/img/product-3.jpg" style="object-fit: cover;">
-                    </div>
-                    <h5 class="font-weight-bold mb-4">Vanilla Ice Cream</h5>
-                    <a href="" class="btn btn-sm btn-secondary">Order Now</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 pb-2">
-                <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
-                    <div class="bg-primary mt-n5 py-3" style="width: 80px;">
-                        <h4 class="font-weight-bold text-white mb-0">$99</h4>
-                    </div>
-                    <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
-                        <img class="rounded-circle w-100 h-100" src="~/temp/img/product-4.jpg" style="object-fit: cover;">
-                    </div>
-                    <h5 class="font-weight-bold mb-4">Vanilla Ice Cream</h5>
-                    <a href="" class="btn btn-sm btn-secondary">Order Now</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 pb-2">
-                <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
-                    <div class="bg-primary mt-n5 py-3" style="width: 80px;">
-                        <h4 class="font-weight-bold text-white mb-0">$99</h4>
-                    </div>
-                    <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
-                        <img class="rounded-circle w-100 h-100" src="~/temp/img/product-5.jpg" style="object-fit: cover;">
-                    </div>
-                    <h5 class="font-weight-bold mb-4">Vanilla Ice Cream</h5>
-                    <a href="" class="btn btn-sm btn-secondary">Order Now</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 pb-2">
-                <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
-                    <div class="bg-primary mt-n5 py-3" style="width: 80px;">
-                        <h4 class="font-weight-bold text-white mb-0">$99</h4>
-                    </div>
-                    <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
-                        <img class="rounded-circle w-100 h-100" src="~/temp/img/product-1.jpg" style="object-fit: cover;">
-                    </div>
-                    <h5 class="font-weight-bold mb-4">Vanilla Ice Cream</h5>
-                    <a href="" class="btn btn-sm btn-secondary">Order Now</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 pb-2">
-                <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
-                    <div class="bg-primary mt-n5 py-3" style="width: 80px;">
-                        <h4 class="font-weight-bold text-white mb-0">$99</h4>
-                    </div>
-                    <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
-                        <img class="rounded-circle w-100 h-100" src="~/temp/img/product-2.jpg" style="object-fit: cover;">
-                    </div>
-                    <h5 class="font-weight-bold mb-4">Vanilla Ice Cream</h5>
-                    <a href="" class="btn btn-sm btn-secondary">Order Now</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 pb-2">
-                <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
-                    <div class="bg-primary mt-n5 py-3" style="width: 80px;">
-                        <h4 class="font-weight-bold text-white mb-0">$99</h4>
-                    </div>
-                    <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
-                        <img class="rounded-circle w-100 h-100" src="~/temp/img/product-3.jpg" style="object-fit: cover;">
-                    </div>
-                    <h5 class="font-weight-bold mb-4">Vanilla Ice Cream</h5>
-                    <a href="" class="btn btn-sm btn-secondary">Order Now</a>
-                </div>
+            }
             </div>
             <div class="col-12 text-center">
                 <a href="" class="btn btn-primary py-3 px-5">Load More</a>

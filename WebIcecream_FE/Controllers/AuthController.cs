@@ -100,10 +100,15 @@ namespace WebIcecream_FE.Controllers
         }
 
         [HttpPost]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
             HttpContext.Session.Remove("Token");
-            return RedirectToAction("Login", "Auth");
+            HttpContext.Session.Remove("Username");
+
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.PostAsync("https://localhost:7018/api/Auth/Logout/logout", null);
+
+            return RedirectToAction("Index", "Home");
         }
         private int? GetUserRoleIdFromToken()
         {
