@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +38,12 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 
+// Configure file upload limits if needed
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 268435456; // 256 MB
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -48,11 +57,24 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// Enable serving static files from a specific directory
+var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+if (!Directory.Exists(imagePath))
+{
+    Directory.CreateDirectory(imagePath);
+}
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(imagePath),
+    RequestPath = "/images"
+});
+
 app.UseRouting();
 
 // Use session middleware
 app.UseSession();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
