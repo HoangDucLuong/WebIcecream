@@ -5,6 +5,7 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.Extensions.Caching.Distributed;
 global using WebIcecream.Models;
 global using System.Text;
+using WebIcecream.Service;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddScoped<IServiceMail, MailService>();
 
 builder.Services.AddCors(options =>
 {
