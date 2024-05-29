@@ -56,9 +56,8 @@ namespace WebIcecream.Controllers
             return Ok(book);
         }
 
-        // PUT: api/Books/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, BookDTO bookDTO)
+        public async Task<IActionResult> PutBook(int id, [FromForm] BookDTO bookDTO, [FromForm] IFormFile image)
         {
             if (id != bookDTO.BookId)
             {
@@ -73,8 +72,12 @@ namespace WebIcecream.Controllers
 
             book.Title = bookDTO.Title;
             book.Description = bookDTO.Description;
-            book.ImageUrl = bookDTO.ImageUrl;
             book.Price = bookDTO.Price;
+
+            if (image != null)
+            {
+                book.ImageUrl = await SaveImageAsync(image);
+            }
 
             _context.Entry(book).State = EntityState.Modified;
 
@@ -97,24 +100,42 @@ namespace WebIcecream.Controllers
             return NoContent();
         }
 
-        // POST: api/Books
         [HttpPost]
-        public async Task<ActionResult<BookDTO>> PostBook(BookDTO bookDTO)
+        public async Task<ActionResult<BookDTO>> PostBook([FromForm] BookDTO bookDTO, [FromForm] IFormFile image)
         {
-            var book = new Book
+            try
             {
-                Title = bookDTO.Title,
-                Description = bookDTO.Description,
-                ImageUrl = bookDTO.ImageUrl,
-                Price = bookDTO.Price
-            };
+                if (bookDTO == null || image == null || image.Length == 0)
+                {
+                    return BadRequest("Invalid book data or image");
+                }
 
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
+                var book = new Book
+                {
+                    Title = bookDTO.Title,
+                    Description = bookDTO.Description,
+                    Price = bookDTO.Price
+                };
 
-            bookDTO.BookId = book.BookId;
+                // Save image if provided
+                if (image != null && image.Length > 0)
+                {
+                    book.ImageUrl = await SaveImageAsync(image);
+                }
 
-            return CreatedAtAction(nameof(GetBook), new { id = bookDTO.BookId }, bookDTO);
+                _context.Books.Add(book);
+                await _context.SaveChangesAsync();
+
+                bookDTO.BookId = book.BookId;
+                bookDTO.ImageUrl = book.ImageUrl;
+
+                // Return CreatedAtAction with appropriate route values
+                return CreatedAtAction(nameof(GetBook), new { id = bookDTO.BookId }, bookDTO);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error creating book: {ex.Message}");
+            }
         }
 
         // DELETE: api/Books/5
@@ -137,5 +158,30 @@ namespace WebIcecream.Controllers
         {
             return _context.Books.Any(e => e.BookId == id);
         }
+        private async Task<string> SaveImageAsync(IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+            {
+                return null;
+            }
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+            var filePath = Path.Combine("wwwroot/images", fileName);
+
+            // Create directory if it doesn't exist
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            var request = HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
+            var imageUrl = $"{baseUrl}/images/{fileName}";
+
+            return imageUrl;
+        }
+
     }
 }
