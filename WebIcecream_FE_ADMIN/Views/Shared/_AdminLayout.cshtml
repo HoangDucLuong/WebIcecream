@@ -408,7 +408,7 @@
           <!-- Sidebar navigation-->
           <nav class="sidebar-nav">
             <ul id="sidebarnav" class="pt-4">
-              <li class="sidebar-item">
+              @* <li class="sidebar-item">
                 <a
                   class="sidebar-link waves-effect waves-dark sidebar-link"
                   href="https://localhost:7006/Home/Index"
@@ -416,7 +416,7 @@
                   ><i class="mdi mdi-view-dashboard"></i
                   ><span class="hide-menu">Home</span></a
                 >
-              </li>
+              </li> *@
               <li class="sidebar-item">
                 <a
                   class="sidebar-link waves-effect waves-dark sidebar-link"
@@ -569,5 +569,14 @@
     <script src="~/Admin/dist/js/pages/chart/chart-page-init.js"></script>
 
     <script src="~/js/Custom.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#myeditor'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+
   </body>
 </html>

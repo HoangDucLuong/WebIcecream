@@ -5,12 +5,9 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.Extensions.Caching.Distributed;
 global using WebIcecream.Models;
 global using System.Text;
-<<<<<<< HEAD
 global using Microsoft.AspNetCore.Builder;
-=======
 using WebIcecream.Service;
 
->>>>>>> bba41b422442983077f25ad683c0312adea56af5
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,10 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-<<<<<<< HEAD
-=======
 builder.Services.AddScoped<IServiceMail, MailService>();
->>>>>>> bba41b422442983077f25ad683c0312adea56af5
 
 builder.Services.AddCors(options =>
 {
