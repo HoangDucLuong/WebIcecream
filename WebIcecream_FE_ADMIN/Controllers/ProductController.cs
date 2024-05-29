@@ -57,21 +57,42 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         await image.CopyToAsync(stream);
                     }
 
-                    product.ImageUrl = $"/images/{fileName}";
+                    // Get the base URL of the application
+                    var request = HttpContext.Request;
+                    var baseUrl = $"{request.Scheme}://{request.Host}";
+
+                    // Combine the base URL with the relative path to create the full URL
+                    product.ImageUrl = $"{baseUrl}/images/{fileName}";
                 }
 
-                var json = JsonConvert.SerializeObject(product);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = await _httpClient.PostAsync(_httpClient.BaseAddress + "/Books/PostBook", content);
-
-                if (response.IsSuccessStatusCode)
+                using (var content = new MultipartFormDataContent())
                 {
-                    TempData["SuccessMessage"] = "Product created successfully.";
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Failed to create product.";
+                    content.Add(new StringContent(product.Title), "Title");
+                    content.Add(new StringContent(product.Description), "Description");
+                    content.Add(new StringContent(product.Price.ToString()), "Price");
+                    content.Add(new StringContent(product.ImageUrl), "ImageUrl");
+                    if (image != null)
+                    {
+                        var fileContent = new StreamContent(image.OpenReadStream());
+                        fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                        {
+                            Name = "image",
+                            FileName = image.FileName
+                        };
+                        fileContent.Headers.ContentType = new MediaTypeHeaderValue(image.ContentType);
+                        content.Add(fileContent);
+                    }
+
+                    var response = await _httpClient.PostAsync(_httpClient.BaseAddress + "/Books/PostBook", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        TempData["SuccessMessage"] = "Product created successfully.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Failed to create product.";
+                    }
                 }
             }
             catch (Exception ex)

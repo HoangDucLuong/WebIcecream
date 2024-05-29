@@ -5,6 +5,7 @@ using WebIcecream.DTOs;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 
 namespace WebIcecream.Controllers
 {
@@ -103,40 +104,32 @@ namespace WebIcecream.Controllers
         [HttpPost]
         public async Task<ActionResult<BookDTO>> PostBook([FromForm] BookDTO bookDTO, [FromForm] IFormFile image)
         {
-            try
+            if (bookDTO == null)
             {
-                if (bookDTO == null || image == null || image.Length == 0)
-                {
-                    return BadRequest("Invalid book data or image");
-                }
-
-                var book = new Book
-                {
-                    Title = bookDTO.Title,
-                    Description = bookDTO.Description,
-                    Price = bookDTO.Price
-                };
-
-                // Save image if provided
-                if (image != null && image.Length > 0)
-                {
-                    book.ImageUrl = await SaveImageAsync(image);
-                }
-
-                _context.Books.Add(book);
-                await _context.SaveChangesAsync();
-
-                bookDTO.BookId = book.BookId;
-                bookDTO.ImageUrl = book.ImageUrl;
-
-                // Return CreatedAtAction with appropriate route values
-                return CreatedAtAction(nameof(GetBook), new { id = bookDTO.BookId }, bookDTO);
+                return BadRequest("Invalid book data");
             }
-            catch (Exception ex)
+
+            var book = new Book
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error creating book: {ex.Message}");
+                Title = bookDTO.Title,
+                Description = bookDTO.Description,
+                Price = bookDTO.Price
+            };
+
+            if (image != null && image.Length > 0)
+            {
+                book.ImageUrl = await SaveImageAsync(image);
             }
+
+            _context.Books.Add(book);
+            await _context.SaveChangesAsync();
+
+            bookDTO.BookId = book.BookId;
+            bookDTO.ImageUrl = book.ImageUrl;
+
+            return CreatedAtAction(nameof(GetBook), new { id = bookDTO.BookId }, bookDTO);
         }
+
 
         // DELETE: api/Books/5
         [HttpDelete("{id}")]

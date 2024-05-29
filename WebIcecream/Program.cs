@@ -5,7 +5,7 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.Extensions.Caching.Distributed;
 global using WebIcecream.Models;
 global using System.Text;
-
+global using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 builder.Services.AddCors(options =>
 {
@@ -23,6 +22,7 @@ builder.Services.AddCors(options =>
             builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
         });
 });
+
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddDbContext<ProjectDak3Context>(options =>
@@ -47,6 +47,7 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.FromMinutes(5) // tolerance for the expiration date
     };
 });
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -71,6 +72,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication(); // Enable authentication
 
 app.UseAuthorization();
+
+app.UseStaticFiles(); // Serve static files from wwwroot
 
 app.MapControllers();
 
