@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Create Product";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    // <script src="~/ckeditor5-build-classic/ckeditor.js"></script>
 }
 
 <h1>Create Product</h1>
@@ -37,8 +38,3 @@
     </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
