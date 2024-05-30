@@ -50,7 +50,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     // Cập nhật trạng thái đăng nhập sau khi đăng nhập thành công
                     ViewData["IsLoggedIn"] = true;
 
-                    return RedirectToAction("Index", "Home"); // Chuyển hướng đến trang chính sau khi đăng nhập thành công
+                    return RedirectToAction("Index", "User"); // Chuyển hướng đến trang chính sau khi đăng nhập thành công
                 }
                 else
                 {
