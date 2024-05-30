@@ -87,7 +87,6 @@
                         <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>CREAM</h1>
                     </a>
                     <div class="navbar-nav mr-auto py-0">
-                        <a href="../../Service/Index" class="nav-item nav-link">Service</a>
                         <a href="../../Gallery/Index" class="nav-item nav-link">Gallery</a>
                         <a href="../../Home/Contact" class="nav-item nav-link">Contact</a>
                         <div class="nav-item dropdown">
@@ -99,8 +98,9 @@
                                 var username = Context.Session.GetString("Username");
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" href="../../Auth/Login">@username</a>
+                                    <a class="dropdown-item" href="../../User/Details">Profile</a>
                                     <form id="logoutForm" action="/Auth/Logout" method="post" style="display: none;">
-                                        @Html.AntiForgeryToken() <!-- Nếu bạn sử dụng AntiForgeryToken -->
+                                        @Html.AntiForgeryToken()
                                     </form>
                                     <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
                                 </div>
@@ -118,11 +118,9 @@
             </nav>
         </div>
     </div>
-    <!-- Navbar End -->
 
     @RenderBody()
 
-    <!-- Footer Start -->
     <div class="container-fluid footer bg-light py-5" style="margin-top: 90px;">
         <div class="container text-center py-5">
             <div class="row">

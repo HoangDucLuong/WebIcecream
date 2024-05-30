@@ -6,7 +6,7 @@ using WebIcecream.DTOs; // Make sure this using directive matches your project's
 
 namespace WebIcecream.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class RecipesController : ControllerBase
     {

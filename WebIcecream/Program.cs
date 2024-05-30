@@ -5,14 +5,34 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.Extensions.Caching.Distributed;
 global using WebIcecream.Models;
 global using System.Text;
+global using Microsoft.AspNetCore.Builder;
+
+using WebIcecream.Service;
+
+
+
+
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".YourAppName.Session";
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+builder.Services.AddScoped<IServiceMail, MailService>();
+
+builder.Services.AddScoped<IServiceMail, MailService>();
 
 
 builder.Services.AddCors(options =>
@@ -23,6 +43,7 @@ builder.Services.AddCors(options =>
             builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
         });
 });
+
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddDbContext<ProjectDak3Context>(options =>
@@ -47,6 +68,7 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.FromMinutes(5) // tolerance for the expiration date
     };
 });
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -71,6 +93,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication(); // Enable authentication
 
 app.UseAuthorization();
+
+app.UseStaticFiles(); // Serve static files from wwwroot
 
 app.MapControllers();
 

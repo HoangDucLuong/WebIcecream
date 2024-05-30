@@ -7,7 +7,7 @@ using WebIcecream.DTOs;
 
 namespace WebIcecream.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class FeedbacksController : ControllerBase
     {
