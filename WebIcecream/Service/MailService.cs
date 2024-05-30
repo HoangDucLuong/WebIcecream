@@ -28,7 +28,7 @@ public class MailService : IServiceMail
 
                 var mimeMessage = new MimeMessage();
                 mimeMessage.From.Add(new MailboxAddress(name, email));
-                mimeMessage.To.Add(new MailboxAddress("DY", "khangdy38@gmail.com"));
+                mimeMessage.To.Add(new MailboxAddress("Ice Cream", "icecream.test24@gmail.com"));
                 mimeMessage.Subject = subject;
                 mimeMessage.Body = new TextPart("plain")
                 {

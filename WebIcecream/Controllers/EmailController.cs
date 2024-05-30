@@ -23,7 +23,7 @@ namespace WebIcecream.Controllers
         [Route("~/")]
         public IActionResult Contact()
         {
-            return View();
+            return Ok();
         }
 
         [HttpPost]
@@ -41,6 +41,7 @@ namespace WebIcecream.Controllers
                 TempData["ErrorMessage"] = "There was an error sending your email. Please try again later.";
                 return RedirectToAction("Contact");
             }
+            
         }
     }
 }
