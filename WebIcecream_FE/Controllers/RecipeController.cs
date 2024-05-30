@@ -2,7 +2,7 @@
 
 namespace WebIcecream_FE.Controllers
 {
-    public class ServiceController : Controller
+    public class RecipeController : Controller
     {
         public IActionResult Index()
         {

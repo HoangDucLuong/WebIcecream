@@ -10,9 +10,12 @@ global using Microsoft.AspNetCore.Builder;
 using WebIcecream.Service;
 
 
-using WebIcecream.Service;
+
+
+
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -27,7 +30,6 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
 builder.Services.AddScoped<IServiceMail, MailService>();
 
 builder.Services.AddScoped<IServiceMail, MailService>();
@@ -47,6 +49,7 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddDbContext<ProjectDak3Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("WebIcecream")));
 
+// JWT Configuration
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = "JwtBearer";
@@ -62,7 +65,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = builder.Configuration["Jwt:Issuer"],
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.FromMinutes(5) 
+        ClockSkew = TimeSpan.FromMinutes(5) // tolerance for the expiration date
     };
 });
 
@@ -75,7 +78,7 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -87,11 +90,11 @@ app.UseSession();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000"));
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); 
+app.UseAuthentication(); // Enable authentication
 
 app.UseAuthorization();
 
-app.UseStaticFiles();
+app.UseStaticFiles(); // Serve static files from wwwroot
 
 app.MapControllers();
 
