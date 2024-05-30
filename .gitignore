@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 WebIcecream/appsettings.json
 WebIcecream/Models/ProjectDak3Context.cs
+WebIcecream/appsettings.json
+WebIcecream/Models/ProjectDak3Context.cs
