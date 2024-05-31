@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using WebIcecream.DTOs; // Make sure this using directive matches your project's structure
+using WebIcecream.DTOs;
 
 namespace WebIcecream.Controllers
 {
@@ -10,70 +12,165 @@ namespace WebIcecream.Controllers
     [ApiController]
     public class RecipesController : ControllerBase
     {
-        // This is a mock database storage for the sake of demonstration
-        private static List<RecipeDTO> _recipesInMemoryDb = new List<RecipeDTO>();
+        private readonly ProjectDak3Context _context;
 
-        // GET: api/recipes
-        [HttpGet]
-        public ActionResult<IEnumerable<RecipeDTO>> GetRecipes()
+        public RecipesController(ProjectDak3Context context)
         {
-            // This would typically be a database call
-            return Ok(_recipesInMemoryDb);
+            _context = context;
         }
 
-        // GET: api/recipes/5
-        [HttpGet("{id}")]
-        public ActionResult<RecipeDTO> GetRecipe(int id)
+        // GET: api/Recipes
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<RecipeDTO>>> GetRecipes()
         {
-            // This would typically be a database call
-            var recipe = _recipesInMemoryDb.FirstOrDefault(r => r.RecipeId == id);
+            var recipes = await _context.Recipes.Select(b => new RecipeDTO
+            {
+               RecipeId = b.RecipeId,
+               Flavor = b.Flavor,
+               Procedure = b.Procedure,
+               Ingredients = b.Ingredients,
+               ImageUrl = b.ImageUrl
+            }).ToListAsync();
+
+            return Ok(recipes);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<RecipeDTO>> GetRecipe(int id)
+        {
+            var recipe = await _context.Recipes.Select(b => new RecipeDTO
+            {
+                RecipeId = b.RecipeId,
+                Flavor = b.Flavor,
+                Procedure = b.Procedure,
+                Ingredients = b.Ingredients,
+                ImageUrl = b.ImageUrl
+            }).FirstOrDefaultAsync(b => b.RecipeId == id);
+
             if (recipe == null)
             {
-                return NotFound("Recipe not found.");
+                return NotFound();
             }
+
             return Ok(recipe);
         }
 
-        // POST: api/recipes
-        [HttpPost]
-        public ActionResult<RecipeDTO> PostRecipe(RecipeDTO recipeDto)
+        private bool RecipeExists(int id)
         {
-            // In a real scenario, you would also include validation and error handling
-            // This ID assignment mimics an auto-incrementing primary key in a database
-            recipeDto.RecipeId = _recipesInMemoryDb.Any() ? _recipesInMemoryDb.Max(r => r.RecipeId) + 1 : 1;
-            _recipesInMemoryDb.Add(recipeDto);
-            // Redirect to GetRecipe route to retrieve the recipe by the newly assigned ID
-            return CreatedAtAction(nameof(GetRecipe), new { id = recipeDto.RecipeId }, recipeDto);
+            return _context.Recipes.Any(e => e.RecipeId == id);
         }
 
-        // PUT: api/recipes/5
-        [HttpPut("{id}")]
-        public IActionResult PutRecipe(int id, RecipeDTO recipeDto)
+        private async Task<string> SaveImageAsync(IFormFile image)
         {
-            var recipe = _recipesInMemoryDb.FirstOrDefault(r => r.RecipeId == id);
+            if (image == null || image.Length == 0)
+            {
+                return null;
+            }
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+            var filePath = Path.Combine("wwwroot/images", fileName);
+
+            // Create directory if it doesn't exist
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            var request = HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
+            var imageUrl = $"{baseUrl}/images/{fileName}";
+
+            return imageUrl;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<RecipeDTO>> PostRecipes([FromForm] RecipeDTO recipeDTO, [FromForm] IFormFile image)
+        {
+            if (recipeDTO == null)
+            {
+                return BadRequest("Invalid recipe data");
+            }
+
+            var recipe = new Recipe
+            {
+                Flavor = recipeDTO.Flavor,
+                Procedure = recipeDTO.Procedure,
+                Ingredients = recipeDTO.Ingredients,
+            };
+
+            if (image != null && image.Length > 0)
+            {
+                recipe.ImageUrl = await SaveImageAsync(image);
+            }
+
+            _context.Recipes.Add(recipe);
+            await _context.SaveChangesAsync();
+
+            recipeDTO.RecipeId = recipe.RecipeId;
+            recipeDTO.ImageUrl = recipe.ImageUrl;
+
+            return CreatedAtAction(nameof(GetRecipe), new { id = recipe.RecipeId }, recipeDTO);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutRecipes(int id, [FromForm] RecipeDTO recipeDTO, [FromForm] IFormFile image)
+        {
+            if (id != recipeDTO.RecipeId)
+            {
+                return BadRequest();
+            }
+
+            var recipe = await _context.Recipes.FindAsync(id);
             if (recipe == null)
             {
-                return NotFound("Recipe not found.");
+                return NotFound();
             }
-            recipe.Flavor = recipeDto.Flavor;
-            recipe.Ingredients = recipeDto.Ingredients;
-            recipe.Procedure = recipeDto.Procedure;
-            recipe.ImageUrl = recipeDto.ImageUrl;
 
-            return NoContent(); // 204 No Content is typically returned when the update is successful
+            recipe.Flavor = recipeDTO.Flavor;
+            recipe.Procedure = recipeDTO.Procedure;
+            recipe.Ingredients = recipeDTO.Ingredients;
+
+            if (image != null)
+            {
+                recipe.ImageUrl = await SaveImageAsync(image);
+            }
+
+            _context.Entry(recipe).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!RecipeExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // DELETE: api/recipes/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteRecipe(int id)
+        public async Task<IActionResult> DeleteRecipes(int id)
         {
-            var recipe = _recipesInMemoryDb.FirstOrDefault(r => r.RecipeId == id);
-            if (recipe != null)
+            var recipe = await _context.Recipes.FindAsync(id);
+            if (recipe == null)
             {
-                _recipesInMemoryDb.Remove(recipe);
-                return Ok();
+                return NotFound();
             }
-            return NotFound("Recipe not found.");
+
+            _context.Recipes.Remove(recipe);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

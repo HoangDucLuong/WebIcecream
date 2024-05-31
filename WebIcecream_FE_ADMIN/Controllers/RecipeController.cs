@@ -1,36 +1,50 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using WebIcecream_FE_ADMIN.Models;
-using X.PagedList;
 
 namespace WebIcecream_FE_ADMIN.Controllers
 {
     public class RecipeController : Controller
     {
-        Uri baseAddress = new Uri("https://localhost:7018/api");
         private readonly HttpClient _httpClient;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public RecipeController(IWebHostEnvironment webHostEnvironment)
+        public RecipeController(IHttpClientFactory httpClientFactory, IWebHostEnvironment webHostEnvironment)
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = baseAddress;
+            _httpClient = httpClientFactory.CreateClient();
+            _httpClient.BaseAddress = new Uri("https://localhost:7018/api");
             _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IActionResult> Index()
         {
             ViewData["IsLoggedIn"] = true;
-            var response = await _httpClient.GetAsync(_httpClient.BaseAddress + "/Recipes/GetRecipes");
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var recipes = JsonConvert.DeserializeObject<List<RecipeViewModel>>(data);
-                return View(recipes);
+                var response = await _httpClient.GetAsync("/Recipes/GetRecipes");
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var recipes = JsonConvert.DeserializeObject<List<RecipeViewModel>>(data);
+                    return View(recipes);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to fetch recipes.";
+                    return View(new List<RecipeViewModel>());
+                }
             }
-            else
+            catch (Exception ex)
             {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
                 return View(new List<RecipeViewModel>());
             }
         }
@@ -43,34 +57,38 @@ namespace WebIcecream_FE_ADMIN.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(RecipeViewModel product, IFormFile image)
-        {
+        public async Task<IActionResult> Create(RecipeViewModel recipe, IFormFile image)
+{
             try
             {
-                if (image != null)
+                if (recipe.Image != null)
                 {
-                    var fileName = Path.GetFileName(image.FileName);
+                    var fileName = Path.GetFileName(recipe.Image.FileName);
                     var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        await image.CopyToAsync(stream);
+                        await recipe.Image.CopyToAsync(stream);
                     }
 
-                    // Get the base URL of the application
-                    var request = HttpContext.Request;
-                    var baseUrl = $"{request.Scheme}://{request.Host}";
+                            var request = HttpContext.Request;
+                            var baseUrl = $"{request.Scheme}://{request.Host}";
 
-                    // Combine the base URL with the relative path to create the full URL
-                    product.ImageUrl = $"{baseUrl}/images/{fileName}";
+                            recipe.ImageUrl = $"{baseUrl}/images/{fileName}";
+                }
+                else
+                {
+                    // If no image is uploaded, set ImageUrl to an empty string
+                    recipe.ImageUrl = "";
                 }
 
                 using (var content = new MultipartFormDataContent())
                 {
-                    content.Add(new StringContent(product.Flavor), "Flavor");
-                    content.Add(new StringContent(product.Ingredients), "Ingredients");
-                    content.Add(new StringContent(product.Procedure), "Procedure");
-                    content.Add(new StringContent(product.ImageUrl), "ImageUrl");
+                    content.Add(new StringContent(recipe.Flavor), "Flavor");
+                    content.Add(new StringContent(recipe.Ingredients), "Ingredients");
+                    content.Add(new StringContent(recipe.Procedure), "Procedure");
+                    content.Add(new StringContent(recipe.ImageUrl), "ImageUrl");
+
                     if (image != null)
                     {
                         var fileContent = new StreamContent(image.OpenReadStream());
@@ -83,15 +101,16 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         content.Add(fileContent);
                     }
 
-                    var response = await _httpClient.PostAsync(_httpClient.BaseAddress + "/Recipes/PostRecipe", content);
+                    var response = await _httpClient.PostAsync("/Recipes/PostRecipes", content);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        TempData["SuccessMessage"] = "Product created successfully.";
+                        TempData["SuccessMessage"] = "Recipe created successfully.";
+                        return RedirectToAction("Index");
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Failed to create product.";
+                        TempData["ErrorMessage"] = "Failed to create recipe.";
                     }
                 }
             }
@@ -107,14 +126,21 @@ namespace WebIcecream_FE_ADMIN.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var response = await _httpClient.DeleteAsync($"{_httpClient.BaseAddress}/Recipes/DeleteRecipe/{id}");
-            if (response.IsSuccessStatusCode)
+            try
             {
-                TempData["SuccessMessage"] = "Recipe deleted successfully.";
+                var response = await _httpClient.DeleteAsync($"/Recipes/DeleteRecipes/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Recipe deleted successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to delete recipe.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Failed to delete recipe.";
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
             }
 
             return RedirectToAction("Index");
