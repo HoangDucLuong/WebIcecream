@@ -32,18 +32,19 @@ public partial class ProjectDak3Context : DbContext
     public virtual DbSet<UserAccount> UserAccounts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-PIJU8TQ\\MSSQLSERVERHK3;Initial Catalog=ProjectDAK3;Persist Security Info=True;User ID=sa;Password=123;Encrypt=True;Trust Server Certificate=True");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-RQ8HM1R;Initial Catalog=ProjectDAK3;Persist Security Info=True;User ID=sa;Password=123;Encrypt=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Book>(entity =>
         {
-            entity.HasKey(e => e.BookId).HasName("PK__Books__3DE0C227933B4263");
+            entity.HasKey(e => e.BookId).HasName("PK__Books__3DE0C22757103A6E");
 
             entity.Property(e => e.BookId).HasColumnName("BookID");
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.ImageUrl)
-                .HasMaxLength(255)
+                .HasMaxLength(500)
                 .IsUnicode(false)
                 .HasColumnName("ImageURL");
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
@@ -54,7 +55,7 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<Feedback>(entity =>
         {
-            entity.HasKey(e => e.FeedbackId).HasName("PK__Feedback__6A4BEDF6F605AB95");
+            entity.HasKey(e => e.FeedbackId).HasName("PK__Feedback__6A4BEDF60D9AC6A7");
 
             entity.ToTable("Feedback");
 
@@ -66,12 +67,12 @@ public partial class ProjectDak3Context : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Feedback__UserID__4AB81AF0");
+                .HasConstraintName("FK__Feedback__UserID__571DF1D5");
         });
 
         modelBuilder.Entity<NewRecipe>(entity =>
         {
-            entity.HasKey(e => e.RecipeId).HasName("PK__NewRecip__FDD988D02D371332");
+            entity.HasKey(e => e.RecipeId).HasName("PK__NewRecip__FDD988D0DE770321");
 
             entity.Property(e => e.RecipeId).HasColumnName("RecipeID");
             entity.Property(e => e.Flavor)
@@ -92,12 +93,12 @@ public partial class ProjectDak3Context : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.NewRecipes)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__NewRecipe__UserI__4E88ABD4");
+                .HasConstraintName("FK__NewRecipe__UserI__5AEE82B9");
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAFD6BFE47A");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAF330105C8");
 
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
             entity.Property(e => e.Address)
@@ -116,17 +117,17 @@ public partial class ProjectDak3Context : DbContext
             entity.HasOne(d => d.Book).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.BookId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Orders__BookID__46E78A0C");
+                .HasConstraintName("FK__Orders__BookID__534D60F1");
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Orders__UserID__45F365D3");
+                .HasConstraintName("FK__Orders__UserID__52593CB8");
         });
 
         modelBuilder.Entity<Recipe>(entity =>
         {
-            entity.HasKey(e => e.RecipeId).HasName("PK__Recipes__FDD988D0BF58A256");
+            entity.HasKey(e => e.RecipeId).HasName("PK__Recipes__FDD988D03368BE4B");
 
             entity.Property(e => e.RecipeId).HasColumnName("RecipeID");
             entity.Property(e => e.Flavor)
@@ -142,7 +143,7 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE3A2D5CFE4C");
+            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE3AE15F4139");
 
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
             entity.Property(e => e.RoleName).HasMaxLength(50);
@@ -150,9 +151,9 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC96FA570B");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACE9772B54");
 
-            entity.HasIndex(e => e.Email, "UQ__Users__A9D10534494B1506").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D1053480CFE1FC").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.Address).HasMaxLength(500);
@@ -175,7 +176,7 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<UserAccount>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__UserAcco__1788CCAC24B866E4");
+            entity.HasKey(e => e.UserId).HasName("PK__UserAcco__1788CCAC456B6405");
 
             entity.HasIndex(e => e.Username, "UC_Username").IsUnique();
 
@@ -192,12 +193,12 @@ public partial class ProjectDak3Context : DbContext
 
             entity.HasOne(d => d.Role).WithMany(p => p.UserAccounts)
                 .HasForeignKey(d => d.RoleId)
-                .HasConstraintName("FK__UserAccou__RoleI__3F466844");
+                .HasConstraintName("FK__UserAccou__RoleI__4F7CD00D");
 
             entity.HasOne(d => d.User).WithOne(p => p.UserAccount)
                 .HasForeignKey<UserAccount>(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__UserAccou__UserI__3E52440B");
+                .HasConstraintName("FK__UserAccou__UserI__4E88ABD4");
         });
 
         OnModelCreatingPartial(modelBuilder);
