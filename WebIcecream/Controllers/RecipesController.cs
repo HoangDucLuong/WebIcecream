@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using WebIcecream.Data.Repositories;
 using WebIcecream.DTOs;
+using WebIcecream.Models;
+using WebIcecream.Service;
 
 namespace WebIcecream.Controllers
 {
@@ -12,166 +16,138 @@ namespace WebIcecream.Controllers
     [ApiController]
     public class RecipesController : ControllerBase
     {
+        private readonly IFileService _fileService;
+        private readonly IRecipeRepository _recipeRepo;
+        private readonly ILogger<RecipesController> _logger;
         private readonly ProjectDak3Context _context;
 
-        public RecipesController(ProjectDak3Context context)
+        public RecipesController(IFileService fileService, IRecipeRepository recipeRepo, ILogger<RecipesController> logger, ProjectDak3Context context)
         {
+            _fileService = fileService;
+            _recipeRepo = recipeRepo;
+            _logger = logger;
             _context = context;
         }
 
-        // GET: api/Recipes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RecipeDTO>>> GetRecipes()
+        public async Task<IActionResult> GetRecipes()
         {
-            var recipes = await _context.Recipes.Select(b => new RecipeDTO
-            {
-               RecipeId = b.RecipeId,
-               Flavor = b.Flavor,
-               Procedure = b.Procedure,
-               Ingredients = b.Ingredients,
-               ImageUrl = b.ImageUrl
-            }).ToListAsync();
-
+            var recipes = await _recipeRepo.GetRecipesAsync();
             return Ok(recipes);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<RecipeDTO>> GetRecipe(int id)
-        {
-            var recipe = await _context.Recipes.Select(b => new RecipeDTO
-            {
-                RecipeId = b.RecipeId,
-                Flavor = b.Flavor,
-                Procedure = b.Procedure,
-                Ingredients = b.Ingredients,
-                ImageUrl = b.ImageUrl
-            }).FirstOrDefaultAsync(b => b.RecipeId == id);
-
-            if (recipe == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(recipe);
-        }
-
         [HttpPost]
-        public async Task<ActionResult<RecipeDTO>> PostRecipes([FromForm] RecipeDTO recipeDTO, [FromForm] IFormFile image)
+        public async Task<IActionResult> CreateRecipe([FromForm] RecipeDTO recipeToAdd)
         {
-            if (recipeDTO == null)
+            try
             {
-                return BadRequest("Invalid recipe data");
+                if (recipeToAdd.ImageFile?.Length > 1 * 1024 * 1024)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "File size should not exceed 1 MB");
+                }
+
+                string[] allowedFileExtensions = { ".jpg", ".jpeg", ".png" };
+                string createdImageName = await _fileService.SaveFileAsync(recipeToAdd.ImageFile, allowedFileExtensions);
+
+                var recipe = new Recipe
+                {
+                    Flavor = recipeToAdd.Flavor,
+                    Procedure = recipeToAdd.Procedure,
+                    Ingredients = recipeToAdd.Ingredients,
+                    ImageUrl = createdImageName
+                };
+
+                var createdRecipe = await _recipeRepo.AddRecipeAsync(recipe);
+                return CreatedAtAction(nameof(CreateRecipe), createdRecipe);
             }
-
-            var recipe = new Recipe
+            catch (Exception ex)
             {
-                Flavor = recipeDTO.Flavor,
-                Procedure = recipeDTO.Procedure,
-                Ingredients = recipeDTO.Ingredients,
-            };
-
-            if (image != null && image.Length > 0)
-            {
-                recipe.ImageUrl = await SaveImagesAsync(image);
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-
-            _context.Recipes.Add(recipe);
-            await _context.SaveChangesAsync();
-
-            recipeDTO.RecipeId = recipe.RecipeId;
-            recipeDTO.ImageUrl = recipe.ImageUrl;
-
-            return CreatedAtAction(nameof(GetRecipe), new { id = recipeDTO.RecipeId }, recipeDTO);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRecipes(int id, [FromForm] RecipeDTO recipeDTO, [FromForm] IFormFile image)
+        public async Task<IActionResult> UpdateRecipe(int id, [FromForm] RecipeUpdateDTO recipeToUpdate)
         {
-            if (id != recipeDTO.RecipeId)
-            {
-                return BadRequest();
-            }
-
-            var recipe = await _context.Recipes.FindAsync(id);
-            if (recipe == null)
-            {
-                return NotFound();
-            }
-
-            recipe.Flavor = recipeDTO.Flavor;
-            recipe.Procedure = recipeDTO.Procedure;
-            recipe.Ingredients = recipeDTO.Ingredients;
-
-            if (image != null)
-            {
-                recipe.ImageUrl = await SaveImagesAsync(image);
-            }
-
-            _context.Entry(recipe).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RecipeExists(id))
+                if (id != recipeToUpdate.RecipeId)
                 {
-                    return NotFound();
+                    return StatusCode(StatusCodes.Status400BadRequest, $"ID in URL and form body does not match.");
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                var existingRecipe = await _recipeRepo.FindRecipeByIdAsync(id);
+                if (existingRecipe == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, $"Recipe with ID: {id} does not found");
+                }
+
+                string oldImage = existingRecipe.ImageUrl;
+                if (recipeToUpdate.ImageFile != null)
+                {
+                    if (recipeToUpdate.ImageFile?.Length > 1 * 1024 * 1024)
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest, "File size should not exceed 1 MB");
+                    }
+
+                    string[] allowedFileExtensions = { ".jpg", ".jpeg", ".png" };
+                    string createdImageName = await _fileService.SaveFileAsync(recipeToUpdate.ImageFile, allowedFileExtensions);
+                    recipeToUpdate.ImageUrl = createdImageName;
+                }
+
+                existingRecipe.Flavor = recipeToUpdate.Flavor;
+                existingRecipe.Procedure = recipeToUpdate.Procedure;
+                existingRecipe.Ingredients = recipeToUpdate.Ingredients;
+                existingRecipe.ImageUrl = recipeToUpdate.ImageUrl;
+
+                var updatedRecipe = await _recipeRepo.UpdateRecipeAsync(existingRecipe);
+
+                if (recipeToUpdate.ImageFile != null)
+                    _fileService.DeleteFile(oldImage);
+
+                return Ok(updatedRecipe);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRecipes(int id)
+        public async Task<IActionResult> DeleteRecipe(int id)
         {
-            var recipe = await _context.Recipes.FindAsync(id);
+            try
+            {
+                var existingRecipe = await _recipeRepo.FindRecipeByIdAsync(id);
+                if (existingRecipe == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, $"Recipe with ID: {id} does not found");
+                }
+
+                await _recipeRepo.DeleteRecipeAsync(existingRecipe);
+                _fileService.DeleteFile(existingRecipe.ImageUrl);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetRecipe(int id)
+        {
+            var recipe = await _recipeRepo.FindRecipeByIdAsync(id);
             if (recipe == null)
             {
-                return NotFound();
+                return StatusCode(StatusCodes.Status404NotFound, $"Recipe with ID: {id} does not found");
             }
-
-            _context.Recipes.Remove(recipe);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(recipe);
         }
 
-        private async Task<string> SaveImagesAsync(IFormFile image)
-        {
-            if (image == null || image.Length == 0)
-            {
-                return null;
-            }
-
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-            var filePath = Path.Combine("wwwroot/images", fileName);
-
-            // Create directory if it doesn't exist
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await image.CopyToAsync(stream);
-            }
-
-            var request = HttpContext.Request;
-            var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
-            var imageUrl = $"{baseUrl}/images/{fileName}";
-
-            return imageUrl;
-        }
-
-        private bool RecipeExists(int id)
-        {
-            return _context.Recipes.Any(e => e.RecipeId == id);
-        }
-
+       
     }
 }

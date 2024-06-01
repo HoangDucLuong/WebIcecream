@@ -8,12 +8,8 @@ global using System.Text;
 global using Microsoft.AspNetCore.Builder;
 
 using WebIcecream.Service;
-
-
-
-
-
-
+using WebIcecream.Data.Repositories;
+using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -33,6 +29,9 @@ builder.Services.AddSession(options =>
 builder.Services.AddScoped<IServiceMail, MailService>();
 
 builder.Services.AddScoped<IServiceMail, MailService>();
+
+builder.Services.AddTransient<IRecipeRepository, RecipeRepository>();
+builder.Services.AddTransient<IFileService, FileService>();
 
 
 builder.Services.AddCors(options =>
@@ -94,7 +93,11 @@ app.UseAuthentication(); // Enable authentication
 
 app.UseAuthorization();
 
-app.UseStaticFiles(); // Serve static files from wwwroot
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath,"Uploads")),
+    RequestPath = "/Resources"
+});
 
 app.MapControllers();
 
