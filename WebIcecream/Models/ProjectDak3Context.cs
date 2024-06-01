@@ -32,7 +32,7 @@ public partial class ProjectDak3Context : DbContext
     public virtual DbSet<UserAccount> UserAccounts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-RQ8HM1R;Initial Catalog=ProjectDAK3;Persist Security Info=True;User ID=sa;Password=123;Encrypt=True;Trust Server Certificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-A77GQJR;Initial Catalog=ProjectDAK3;Persist Security Info=True;User ID=sa;Password=123456;Encrypt=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

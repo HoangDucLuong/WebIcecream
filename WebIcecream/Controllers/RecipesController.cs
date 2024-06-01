@@ -55,36 +55,6 @@ namespace WebIcecream.Controllers
             return Ok(recipe);
         }
 
-        private bool RecipeExists(int id)
-        {
-            return _context.Recipes.Any(e => e.RecipeId == id);
-        }
-
-        private async Task<string> SaveImageAsync(IFormFile image)
-        {
-            if (image == null || image.Length == 0)
-            {
-                return null;
-            }
-
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-            var filePath = Path.Combine("wwwroot/images", fileName);
-
-            // Create directory if it doesn't exist
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await image.CopyToAsync(stream);
-            }
-
-            var request = HttpContext.Request;
-            var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
-            var imageUrl = $"{baseUrl}/images/{fileName}";
-
-            return imageUrl;
-        }
-
         [HttpPost]
         public async Task<ActionResult<RecipeDTO>> PostRecipes([FromForm] RecipeDTO recipeDTO, [FromForm] IFormFile image)
         {
@@ -111,7 +81,7 @@ namespace WebIcecream.Controllers
             recipeDTO.RecipeId = recipe.RecipeId;
             recipeDTO.ImageUrl = recipe.ImageUrl;
 
-            return CreatedAtAction(nameof(GetRecipe), new { id = recipe.RecipeId }, recipeDTO);
+            return CreatedAtAction(nameof(GetRecipe), new { id = recipeDTO.RecipeId }, recipeDTO);
         }
 
         [HttpPut("{id}")]
@@ -196,6 +166,11 @@ namespace WebIcecream.Controllers
             var imageUrl = $"{baseUrl}/images/{fileName}";
 
             return imageUrl;
+        }
+
+        private bool RecipeExists(int id)
+        {
+            return _context.Recipes.Any(e => e.RecipeId == id);
         }
 
     }
