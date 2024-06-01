@@ -29,7 +29,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
             ViewData["IsLoggedIn"] = true;
             try
             {
-                var response = await _httpClient.GetAsync("/Recipes/GetRecipes");
+                var response = await _httpClient.GetAsync(_httpClient.BaseAddress + "/Recipes/GetRecipes");
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadAsStringAsync();
@@ -58,7 +58,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Create(RecipeViewModel recipe, IFormFile image)
-{
+        {
             try
             {
                 if (recipe.Image != null)
@@ -101,7 +101,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         content.Add(fileContent);
                     }
 
-                    var response = await _httpClient.PostAsync("/Recipes/PostRecipes", content);
+                    var response = await _httpClient.PostAsync(_httpClient.BaseAddress + "/Recipes/PostRecipes", content);
 
                     if (response.IsSuccessStatusCode)
                     {

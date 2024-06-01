@@ -102,7 +102,7 @@ namespace WebIcecream.Controllers
 
             if (image != null && image.Length > 0)
             {
-                recipe.ImageUrl = await SaveImageAsync(image);
+                recipe.ImageUrl = await SaveImagesAsync(image);
             }
 
             _context.Recipes.Add(recipe);
@@ -134,7 +134,7 @@ namespace WebIcecream.Controllers
 
             if (image != null)
             {
-                recipe.ImageUrl = await SaveImageAsync(image);
+                recipe.ImageUrl = await SaveImagesAsync(image);
             }
 
             _context.Entry(recipe).State = EntityState.Modified;
@@ -172,5 +172,31 @@ namespace WebIcecream.Controllers
 
             return NoContent();
         }
+
+        private async Task<string> SaveImagesAsync(IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+            {
+                return null;
+            }
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+            var filePath = Path.Combine("wwwroot/images", fileName);
+
+            // Create directory if it doesn't exist
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            var request = HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
+            var imageUrl = $"{baseUrl}/images/{fileName}";
+
+            return imageUrl;
+        }
+
     }
 }
