@@ -92,17 +92,11 @@ app.UseHttpsRedirection();
 app.UseAuthentication(); // Enable authentication
 
 app.UseAuthorization();
-<<<<<<< HEAD
+
 
 app.UseStaticFiles();
-=======
+
 app.UseStaticFiles();
-//app.UseStaticFiles(new StaticFileOptions
-//{
-//    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath,"Uploads")),
-//    RequestPath = "/Resources"
-//});
->>>>>>> 3eba0d0e413fa65ec9a3e0fc48ed269dc380c648
 
 app.MapControllers();
 
