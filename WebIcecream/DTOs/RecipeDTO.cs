@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace WebIcecream.DTOs
-
-{
     public class RecipeDTO
     {
+        [Required]
+        public int RecipeId { get; set; }
+
         [Required(ErrorMessage = "Flavor is required")]
         public string Flavor { get; set; }
 
@@ -13,8 +13,9 @@ namespace WebIcecream.DTOs
         [Required(ErrorMessage = "Procedure is required")]
         public string Procedure { get; set; }
 
-        [Required(ErrorMessage = "Image file is required")]
-        public IFormFile ImageFile { get; set; }
+        [Required(ErrorMessage = "ImageUrl file is required")]
+        public string ImageUrl { get; set; }
+  
     }
 
     public class RecipeUpdateDTO
@@ -36,4 +37,3 @@ namespace WebIcecream.DTOs
 
         public IFormFile ImageFile { get; set; }
     }
-}

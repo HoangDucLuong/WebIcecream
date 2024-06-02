@@ -11,6 +11,6 @@
         public string Procedure { get; set; }
 
         public string ImageUrl { get; set; }
-        public IFormFile Image { get; set; }
+        public IFormFile Image{ get; set; }
     }
 }
