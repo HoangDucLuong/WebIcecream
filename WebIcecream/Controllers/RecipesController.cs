@@ -30,45 +30,71 @@ namespace WebIcecream.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRecipes()
+        public async Task<ActionResult<IEnumerable<RecipeDTO>>> GetRecipes()
         {
-            var recipes = await _recipeRepo.GetRecipesAsync();
+            var recipes = await _context.Recipes.Select(b => new RecipeDTO
+            {
+                RecipeId = b.RecipeId,
+                Flavor = b.Flavor,
+                Ingredients = b.Ingredients,
+                Procedure = b.Procedure,
+                ImageUrl = b.ImageUrl
+            }).ToListAsync();
+
             return Ok(recipes);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateRecipe([FromForm] RecipeDTO recipeToAdd)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<RecipeDTO>> GetRecipe(int id)
         {
-            try
+            var recipe = await _context.Recipes.Select(b => new RecipeDTO
             {
-                if (recipeToAdd.ImageFile?.Length > 1 * 1024 * 1024)
-                {
-                    return StatusCode(StatusCodes.Status400BadRequest, "File size should not exceed 1 MB");
-                }
+                RecipeId = b.RecipeId,
+                Flavor = b.Flavor,
+                Ingredients = b.Ingredients,
+                Procedure = b.Procedure,
+                ImageUrl = b.ImageUrl
+            }).FirstOrDefaultAsync(b => b.RecipeId == id);
 
-                string[] allowedFileExtensions = { ".jpg", ".jpeg", ".png" };
-                string createdImageName = await _fileService.SaveFileAsync(recipeToAdd.ImageFile, allowedFileExtensions);
-
-                var recipe = new Recipe
-                {
-                    Flavor = recipeToAdd.Flavor,
-                    Procedure = recipeToAdd.Procedure,
-                    Ingredients = recipeToAdd.Ingredients,
-                    ImageUrl = createdImageName
-                };
-
-                var createdRecipe = await _recipeRepo.AddRecipeAsync(recipe);
-                return CreatedAtAction(nameof(CreateRecipe), createdRecipe);
-            }
-            catch (Exception ex)
+            if (recipe == null)
             {
-                _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return NotFound();
             }
+
+            return Ok(recipe);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<RecipeDTO>> PostRecipe([FromForm] RecipeDTO recipeDTO, [FromForm] IFormFile image)
+        {
+            if (recipeDTO == null)
+            {
+                return BadRequest("Invalid recipe data");
+            }
+
+            var recipe = new Recipe
+            {
+                Flavor = recipeDTO.Flavor,
+                Ingredients = recipeDTO.Ingredients,
+                Procedure = recipeDTO.Procedure
+            };
+
+            if (image != null && image.Length > 0)
+            {
+                recipe.ImageUrl = await SaveImagesAsync(image);
+            }
+
+            _context.Recipes.Add(recipe);
+            await _context.SaveChangesAsync();
+
+            recipeDTO.RecipeId = recipe.RecipeId;
+            recipeDTO.ImageUrl = recipe.ImageUrl;
+
+            return CreatedAtAction(nameof(GetRecipe), new { id = recipeDTO.RecipeId }, recipeDTO);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRecipe(int id, [FromForm] RecipeUpdateDTO recipeToUpdate)
+        public async Task<IActionResult> PutRecipe(int id, [FromForm] RecipeUpdateDTO recipeToUpdate)
         {
             try
             {
@@ -137,17 +163,31 @@ namespace WebIcecream.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetRecipe(int id)
-        {
-            var recipe = await _recipeRepo.FindRecipeByIdAsync(id);
-            if (recipe == null)
-            {
-                return StatusCode(StatusCodes.Status404NotFound, $"Recipe with ID: {id} does not found");
-            }
-            return Ok(recipe);
-        }
 
-       
+
+        private async Task<string> SaveImagesAsync(IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+            {
+                return null;
+            }
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+            var filePath = Path.Combine("wwwroot/images", fileName);
+
+            // Create directory if it doesn't exist
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            var request = HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
+            var imageUrl = $"{baseUrl}/images/{fileName}";
+
+            return imageUrl;
+        }
     }
 }
