@@ -38,17 +38,18 @@ namespace WebIcecream_FE_ADMIN.Controllers
                 string data = await response.Content.ReadAsStringAsync();
                 var token = JsonConvert.DeserializeObject<TokenResponse>(data);
 
-                // Lưu token vào session hoặc cookie
-                HttpContext.Session.SetString("Token", token.Token);
-
                 // Kiểm tra vai trò của người dùng
-                var userRoleId = GetUserRoleIdFromToken();
+                var userRoleId = GetUserRoleIdFromToken(token.Token);
+
+                // Lưu token vào session hoặc cookie
+                if (userRoleId == 2)
+                    HttpContext.Session.SetString("Token", token.Token);
 
                 // Kiểm tra xem vai trò có phù hợp không
                 if (userRoleId == 2)
                 {
                     // Cập nhật trạng thái đăng nhập sau khi đăng nhập thành công
-                    ViewData["IsLoggedIn"] = true;
+                    ViewData["IsLoggedIn"] = true; 
 
                     return RedirectToAction("Index", "User"); // Chuyển hướng đến trang chính sau khi đăng nhập thành công
                 }
@@ -80,9 +81,9 @@ namespace WebIcecream_FE_ADMIN.Controllers
 
             return RedirectToAction("Login");
         }
-        private int? GetUserRoleIdFromToken()
+        private int? GetUserRoleIdFromToken(string token)
         {
-            var token = HttpContext.Session.GetString("Token");
+            //var token = HttpContext.Session.GetString("Token");
 
             if (!string.IsNullOrEmpty(token))
             {
