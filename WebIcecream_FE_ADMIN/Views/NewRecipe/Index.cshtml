@@ -1,0 +1,110 @@
+﻿@model IEnumerable<WebIcecream_FE_ADMIN.Models.NewRecipeViewModel>
+
+
+@{
+	ViewData["Title"] = "New Recipe Management";
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .table th, .table td {
+        padding: 1rem; /* Điều chỉnh khoảng cách giữa các ô */
+    }
+
+    .section-title {
+        font-size: 2.5rem; /* Điều chỉnh kích thước tiêu đề */
+        margin-bottom: 2rem; /* Khoảng cách phía dưới tiêu đề */
+    }
+
+    .btn {
+        margin-right: 0.5rem; /* Điều chỉnh khoảng cách giữa các nút */
+    }
+
+    img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+</style>
+
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h1 class="section-title position-relative d-inline-block">Recipe Management</h1>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col text-right">
+            <a class="btn btn-primary" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.First().RecipeId)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().Flavor)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().Ingredients)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().Procedure)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().ImageUrl)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => item.RecipeId)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Flavor)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Ingredients)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Procedure)</td>
+                                <td>
+                                    <img src="@item.ImageUrl" alt="Recipe Image" />
+                                </td>
+                                <td>
+                                    <a class="btn btn-sm btn-info" asp-action="Edit" asp-route-id="@item.RecipeId"><i class="fa fa-edit"></i> Edit</a>
+                                    <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.RecipeId"><i class="fa fa-info-circle"></i> Details</a>
+                                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.RecipeId"><i class="fa fa-trash"></i> Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <ul class="pagination" id="pagination"></ul>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var rowsShown = 10;
+            var rowsTotal = $('#recipeTable tbody tr').length;
+            var numPages = Math.ceil(rowsTotal / rowsShown);
+            for (var i = 0; i < numPages; i++) {
+                var pageNum = i + 1;
+                $('#pagination').append('<li class="page-item"><a href="#" class="page-link" rel="' + i + '">' + pageNum + '</a></li>');
+            }
+            $('#recipeTable tbody tr').hide();
+            $('#recipeTable tbody tr').slice(0, rowsShown).show();
+            $('#pagination li:first').addClass('active');
+            $('#pagination a').bind('click', function (e) {
+                e.preventDefault();
+                $('#pagination li').removeClass('active');
+                $(this).parent().addClass('active');
+                var currPage = $(this).attr('rel');
+                var startItem = currPage * rowsShown;
+                var endItem = startItem + rowsShown;
+                $('#recipeTable tbody tr').css('opacity', '0.0').hide().slice(startItem, endItem)
+                    .css('display', 'table-row').animate({ opacity: 1 }, 300);
+            });
+        });
+    </script>
+}
