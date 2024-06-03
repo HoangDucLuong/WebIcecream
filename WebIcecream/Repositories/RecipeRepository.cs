@@ -25,7 +25,7 @@ public class RecipeRepository : IRecipeRepository
     {
         _context.Recipes.Add(recipe);
         await _context.SaveChangesAsync();
-        return recipe;  // returning created recipe, it will automatically fetch `RecipeId`
+        return recipe; 
     }
 
     public async Task<Recipe> UpdateRecipeAsync(Recipe recipe)

@@ -112,20 +112,27 @@ namespace WebIcecream.Controllers
                 string oldImage = existingRecipe.ImageUrl;
                 if (recipeToUpdate.ImageFile != null)
                 {
-                    if (recipeToUpdate.ImageFile?.Length > 1 * 1024 * 1024)
+                    if (recipeToUpdate.ImageFile?.Length > 5 * 1024 * 1024)
                     {
-                        return StatusCode(StatusCodes.Status400BadRequest, "File size should not exceed 1 MB");
+                        return StatusCode(StatusCodes.Status400BadRequest, "File size should not exceed 5 MB");
                     }
 
                     string[] allowedFileExtensions = { ".jpg", ".jpeg", ".png" };
                     string createdImageName = await _fileService.SaveFileAsync(recipeToUpdate.ImageFile, allowedFileExtensions);
                     recipeToUpdate.ImageUrl = createdImageName;
+
+                    // Update existing recipe's ImageUrl with the new one
+                    existingRecipe.ImageUrl = createdImageName;
+                }
+                else
+                {
+                    // If no new image is uploaded, retain the existing ImageUrl
+                    recipeToUpdate.ImageUrl = existingRecipe.ImageUrl;
                 }
 
                 existingRecipe.Flavor = recipeToUpdate.Flavor;
                 existingRecipe.Procedure = recipeToUpdate.Procedure;
                 existingRecipe.Ingredients = recipeToUpdate.Ingredients;
-                existingRecipe.ImageUrl = recipeToUpdate.ImageUrl;
 
                 var updatedRecipe = await _recipeRepo.UpdateRecipeAsync(existingRecipe);
 
@@ -140,6 +147,8 @@ namespace WebIcecream.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecipe(int id)

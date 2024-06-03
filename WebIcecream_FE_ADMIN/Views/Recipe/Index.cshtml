@@ -61,8 +61,16 @@
                                 <td>@Html.DisplayFor(modelItem => item.Ingredients)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Procedure)</td>
                                 <td>
-                                    <img src="@item.ImageUrl" alt="Recipe Image" />
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl) && !item.ImageUrl.StartsWith("http"))
+                                    {
+                                        <img src="https://localhost:7018/images/@item.ImageUrl" alt="Recipe Image" />
+                                    }
+                                    else
+                                    {
+                                        <img src="@item.ImageUrl" alt="Recipe Image" />
+                                    }
                                 </td>
+
                                 <td>
                                     <a class="btn btn-sm btn-info" asp-action="Edit" asp-route-id="@item.RecipeId"><i class="fa fa-edit"></i> Edit</a>
                                     <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.RecipeId"><i class="fa fa-info-circle"></i> Details</a>

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using WebIcecream_FE_ADMIN.Models;
 using X.PagedList;
+using System.IO;
 
 namespace WebIcecream_FE_ADMIN.Controllers
 {
@@ -43,7 +45,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(RecipeViewModel product, IFormFile image)
+        public async Task<IActionResult> Create(RecipeViewModel recipe, IFormFile image)
         {
             try
             {
@@ -62,15 +64,15 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     var baseUrl = $"{request.Scheme}://{request.Host}";
 
                     // Combine the base URL with the relative path to create the full URL
-                    product.ImageUrl = $"{baseUrl}/images/{fileName}";
+                    recipe.ImageUrl = $"{baseUrl}/images/{fileName}";
                 }
 
                 using (var content = new MultipartFormDataContent())
                 {
-                    content.Add(new StringContent(product.Flavor), "Flavor");
-                    content.Add(new StringContent(product.Ingredients), "Ingredients");
-                    content.Add(new StringContent(product.Procedure), "Procedure");
-                    content.Add(new StringContent(product.ImageUrl), "ImageUrl");
+                    content.Add(new StringContent(recipe.Flavor), "Flavor");
+                    content.Add(new StringContent(recipe.Ingredients), "Ingredients");
+                    content.Add(new StringContent(recipe.Procedure), "Procedure");
+                    content.Add(new StringContent(recipe.ImageUrl), "ImageUrl");
                     if (image != null)
                     {
                         var fileContent = new StreamContent(image.OpenReadStream());
@@ -87,11 +89,11 @@ namespace WebIcecream_FE_ADMIN.Controllers
 
                     if (response.IsSuccessStatusCode)
                     {
-                        TempData["SuccessMessage"] = "Product created successfully.";
+                        TempData["SuccessMessage"] = "Recipe created successfully.";
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Failed to create product.";
+                        TempData["ErrorMessage"] = "Failed to create recipe.";
                     }
                 }
             }
@@ -103,7 +105,77 @@ namespace WebIcecream_FE_ADMIN.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/Recipes/GetRecipe/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                var recipe = JsonConvert.DeserializeObject<RecipeViewModel>(data);
+                return View(recipe);
+            }
+            return NotFound();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> Edit(RecipeViewModel recipe, IFormFile image)
+        {
+            try
+            {
+                if (image != null)
+                {
+                    var fileName = Path.GetFileName(image.FileName);
+                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
+                    }
+
+                    // Chỉ lưu tên file, không bao gồm đường dẫn đầy đủ
+                    recipe.ImageUrl = fileName;
+                }
+
+                using (var content = new MultipartFormDataContent())
+                {
+                    content.Add(new StringContent(recipe.RecipeId.ToString()), "RecipeId");
+                    content.Add(new StringContent(recipe.Flavor), "Flavor");
+                    content.Add(new StringContent(recipe.Ingredients), "Ingredients");
+                    content.Add(new StringContent(recipe.Procedure), "Procedure");
+                    content.Add(new StringContent(recipe.ImageUrl), "ImageUrl");
+
+                    if (image != null)
+                    {
+                        var fileContent = new StreamContent(image.OpenReadStream());
+                        fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                        {
+                            Name = "ImageFile",
+                            FileName = image.FileName
+                        };
+                        fileContent.Headers.ContentType = new MediaTypeHeaderValue(image.ContentType);
+                        content.Add(fileContent);
+                    }
+
+                    var response = await _httpClient.PutAsync($"{_httpClient.BaseAddress}/Recipes/PutRecipe/{recipe.RecipeId}", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        TempData["SuccessMessage"] = "Recipe updated successfully.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Failed to update recipe.";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+            }
+
+            return RedirectToAction("Index");
+        }
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {

@@ -1,61 +1,77 @@
-﻿namespace WebIcecream.Service
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace WebIcecream.Service
 {
     public interface IFileService
     {
         Task<string> SaveFileAsync(IFormFile imageFile, string[] allowedFileExtensions);
-        void DeleteFile(string fileNameWithExtension);
+        void DeleteFile(string fileName);
     }
 
-    public class FileService(IWebHostEnvironment environment) : IFileService
+    public class FileService : IFileService
     {
+        private readonly IWebHostEnvironment _environment;
+
+        public FileService(IWebHostEnvironment environment)
+        {
+            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+        }
 
         public async Task<string> SaveFileAsync(IFormFile imageFile, string[] allowedFileExtensions)
         {
-            if (imageFile == null)
+            if (imageFile == null || imageFile.Length == 0)
             {
-                throw new ArgumentNullException(nameof(imageFile));
+                throw new ArgumentNullException(nameof(imageFile), "File is null or empty.");
             }
 
-            var contentPath = environment.ContentRootPath;
-            var path = Path.Combine(contentPath, "Uploads");
-            // path = "c://projects/ImageManipulation.Ap/uploads" ,not exactly, but something like that
+            var contentPath = _environment.ContentRootPath;
+            var uploadPath = Path.Combine(contentPath, "wwwroot", "images");
 
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(uploadPath))
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(uploadPath);
             }
 
-            // Check the allowed extenstions
-            var ext = Path.GetExtension(imageFile.FileName);
-            if (!allowedFileExtensions.Contains(ext))
+            var fileExtension = Path.GetExtension(imageFile.FileName);
+            var isValidExtension = allowedFileExtensions.Any(ext => ext.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
+
+            if (!isValidExtension)
             {
-                throw new ArgumentException($"Only {string.Join(",", allowedFileExtensions)} are allowed.");
+                throw new ArgumentException($"Only {string.Join(",", allowedFileExtensions)} are allowed file extensions.");
             }
 
-            // generate a unique filename
-            var fileName = $"{Guid.NewGuid().ToString()}{ext}";
-            var fileNameWithPath = Path.Combine(path, fileName);
-            using var stream = new FileStream(fileNameWithPath, FileMode.Create);
-            await imageFile.CopyToAsync(stream);
+            var fileName = $"{Guid.NewGuid()}{fileExtension}";
+            var filePath = Path.Combine(uploadPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream);
+            }
+
             return fileName;
         }
 
-
-        public void DeleteFile(string fileNameWithExtension)
+        public void DeleteFile(string fileName)
         {
-            if (string.IsNullOrEmpty(fileNameWithExtension))
+            if (string.IsNullOrEmpty(fileName))
             {
-                throw new ArgumentNullException(nameof(fileNameWithExtension));
+                throw new ArgumentNullException(nameof(fileName), "File name is null or empty.");
             }
-            var contentPath = environment.ContentRootPath;
-            var path = Path.Combine(contentPath, $"Uploads", fileNameWithExtension);
 
-            if (!File.Exists(path))
+            var contentPath = _environment.ContentRootPath;
+            var filePath = Path.Combine(contentPath, "wwwroot", "images", fileName);
+
+            if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException($"Invalid file path");
+                throw new FileNotFoundException($"File not found at {filePath}");
             }
-            File.Delete(path);
+
+            File.Delete(filePath);
         }
-
     }
 }

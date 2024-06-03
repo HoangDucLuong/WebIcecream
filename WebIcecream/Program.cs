@@ -12,13 +12,16 @@ using WebIcecream.Data.Repositories;
 using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+builder.Services.AddControllersWithViews();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Register HttpClient for making API calls
+builder.Services.AddHttpClient();
+
+// Register HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddControllersWithViews();
+// Add session services
 builder.Services.AddSession(options =>
 {
     options.Cookie.Name = ".YourAppName.Session";
@@ -26,14 +29,15 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+// Register your email service
 builder.Services.AddScoped<IServiceMail, MailService>();
 
-builder.Services.AddScoped<IServiceMail, MailService>();
-
+// Register repositories and other services
 builder.Services.AddTransient<IRecipeRepository, RecipeRepository>();
 builder.Services.AddTransient<IFileService, FileService>();
 
-
+// Configure CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
@@ -43,8 +47,10 @@ builder.Services.AddCors(options =>
         });
 });
 
+// Add distributed memory cache
 builder.Services.AddDistributedMemoryCache();
 
+// Configure EF Core with SQL Server
 builder.Services.AddDbContext<ProjectDak3Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("WebIcecream")));
 
@@ -68,12 +74,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
+// Add Swagger for API documentation
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -84,20 +87,33 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
 
-app.UseSession();
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000"));
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
-app.UseAuthentication(); // Enable authentication
+app.UseRouting();
+
+// Use session middleware
+app.UseSession();
+
+// Use CORS
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000"));
+
+// Enable authentication
+app.UseAuthentication();
 
 app.UseAuthorization();
 
-
-app.UseStaticFiles();
-
-app.UseStaticFiles();
-
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+});
 
 app.Run();
