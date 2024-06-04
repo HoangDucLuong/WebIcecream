@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Pkcs;
 
 namespace WebIcecream_FE.Controllers
 {
@@ -33,42 +35,6 @@ namespace WebIcecream_FE.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Contact(string name, string email, string phone, string message)
-        {
-            var emailData = new
-            {
-                Name = name,
-                Email = email,
-                Phone = phone,
-                Message = message
-            };
-
-            var content = new StringContent(JsonSerializer.Serialize(emailData), Encoding.UTF8, "application/json");
-
-            try
-            {
-                var response = await _httpClient.PostAsync(_httpClient.BaseAddress + "/Email/SendEmail", content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    TempData["SuccessMessage"] = "Email sent successfully!";
-                }
-                else
-                {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    _logger.LogError($"Error sending email: {response.StatusCode}, {responseContent}");
-                    TempData["ErrorMessage"] = "There was an error sending your email. Please try again later.";
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error sending email.");
-                TempData["ErrorMessage"] = "There was an error sending your email. Please try again later.";
-            }
-
-            return RedirectToAction("Contact");
-        }
 
         public IActionResult About()
         {
@@ -77,6 +43,37 @@ namespace WebIcecream_FE.Controllers
 
         public IActionResult Privacy()
         {
+            return View();
+        }
+        public async Task<IActionResult> SendMail(string name, string email, string phone, string message)
+        {
+            try
+            {
+                ContactViewModel contact = new ContactViewModel("name", "email", "phone", "mess");//(name, email, phone, message);
+                var json = JsonConvert.SerializeObject(contact);
+                var content = new StringContent("", Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(_httpClient.BaseAddress + "/Email/SendEmail?name=" + name + "&email=" + email + "&phone=" + phone + "&message=" + message, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Email sent successfully!";
+                    return RedirectToAction("Index");
+
+                }
+                else
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError($"Error sending email: {response.StatusCode}, {responseContent}");
+                    TempData["ErrorMessage"] = "ERROR  " + response.StatusCode + "  " + responseContent;//"There was an error sending your email. Please try again later. ";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending email.");
+                TempData["ErrorMessage"] = "There was an error sending your email. Please try again later.";
+            }
+
             return View();
         }
 
