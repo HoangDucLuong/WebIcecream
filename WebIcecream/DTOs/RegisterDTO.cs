@@ -20,5 +20,11 @@ namespace WebIcecream.DTOs
 
         public string PhoneNumber { get; set; }
 
+        public int PackageId { get; set; }
+
+        public DateTime PackageStartDate { get; set; }
+
+        public DateTime PackageEndDate { get; set; }
+
     }
 }

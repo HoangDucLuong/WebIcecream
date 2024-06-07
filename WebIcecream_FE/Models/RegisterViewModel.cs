@@ -32,5 +32,8 @@ namespace WebIcecream_FE.Models
         [Required]
         [Phone]
         public string PhoneNumber { get; set; }
+
+        [Required]
+        public int PackageId { get; set; }
     }
 }

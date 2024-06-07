@@ -67,7 +67,10 @@ namespace WebIcecream.Controllers
                 PhoneNumber = registerDTO.PhoneNumber,
                 PaymentStatus = "Pending", // You may set a default payment status
                 RegistrationDate = DateTime.Now,
-                IsActive = true // Assuming user is active upon registration
+                IsActive = true, // Assuming user is active upon registration
+                PackageId = registerDTO.PackageId,
+                PackageStartDate = DateTime.Now,
+                PackageEndDate = DateTime.Now.AddDays(30)
             };
 
             _context.Users.Add(newUser);

@@ -72,9 +72,24 @@ namespace WebIcecream_FE.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
-            return View();
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.GetAsync("https://localhost:7018/api/MembershipPackages/GetMembershipPackages");
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                var memberships = JsonConvert.DeserializeObject<List<MembershipPackageModel>>(data);
+                ViewData["Membership"] = memberships;
+
+                return View();
+
+            }
+            else
+            {
+                return View();
+
+            }
         }
 
         [HttpPost]
