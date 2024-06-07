@@ -1,9 +1,8 @@
-﻿@model List<RecipeViewModel>
+﻿@model List<WebIcecream_FE.Models.RecipeViewModel>
 @{
     ViewData["Title"] = "Recipe";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 
 <!-- Header Start -->
 <div class="jumbotron jumbotron-fluid page-header" style="margin-bottom: 90px;">
@@ -26,67 +25,33 @@
             </div>
         </div>
         <div class="row">
-            @foreach (var item in Model)
-            {
-                <div class="col-12 text-center">
-                    <ul class="list-inline mb-4 pb-2" id="portfolio-flters">
-                        <li class="btn btn-sm btn-outline-primary m-1 active" data-filter="*">All</li>
-                        <li class="btn btn-sm btn-outline-primary m-1" data-filter=".first">@item.Flavor</li>
-                        @* <li class="btn btn-sm btn-outline-primary m-1" data-filter=".second">Vanilla</li>
-                        <li class="btn btn-sm btn-outline-primary m-1" data-filter=".third">Chocolate</li> *@
-                    </ul>
-                </div>
-            }
+            <div class="col-12 text-center">
+                <ul class="list-inline mb-4 pb-2" id="portfolio-flters">
+                    <li class="btn btn-sm btn-outline-primary m-1 active" data-filter="*">All</li>
+                    @foreach (var item in Model.GroupBy(r => r.Flavor).Select(g => g.First()))
+                    {
+                        <li class="btn btn-sm btn-outline-primary m-1" data-filter="@('.' + item.Flavor.Replace(" ", ""))">@item.Flavor</li>
+                    }
+                </ul>
+            </div>
         </div>
         <div class="row m-0 portfolio-container">
-            <div class="col-lg-4 col-md-6 p-0 portfolio-item first">
-                <div class="position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="~/temp/img/portfolio-1.jpg" alt="">
-                    <a class="portfolio-btn" href="~/temp/img/portfolio-1.jpg" data-lightbox="portfolio">
-                        <i class="fa fa-plus text-primary" style="font-size: 60px;"></i>
-                    </a>
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-4 col-md-6 p-0 portfolio-item @(item.Flavor.Replace(" ", ""))">
+                    <div class="position-relative overflow-hidden">
+                        <img class="img-fluid w-100" src="@item.ImageUrl" alt="@item.Flavor">
+                        <a class="portfolio-btn" href="@item.ImageUrl" data-lightbox="portfolio">
+                            <i class="fa fa-plus text-primary" style="font-size: 60px;"></i>
+                        </a>
+                        <div class="portfolio-info">
+                            <h4>@item.Flavor</h4>
+                            <p>@item.Ingredients</p>
+                            <p>@item.Procedure</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-6 p-0 portfolio-item second">
-                <div class="position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="~/temp/img/portfolio-2.jpg" alt="">
-                    <a class="portfolio-btn" href="~/temp/img/portfolio-2.jpg" data-lightbox="portfolio">
-                        <i class="fa fa-plus text-primary" style="font-size: 60px;"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 p-0 portfolio-item third">
-                <div class="position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="~/temp/img/portfolio-3.jpg" alt="">
-                    <a class="portfolio-btn" href="~/temp/img/portfolio-3.jpg" data-lightbox="portfolio">
-                        <i class="fa fa-plus text-primary" style="font-size: 60px;"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 p-0 portfolio-item first">
-                <div class="position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="~/temp/img/portfolio-4.jpg" alt="">
-                    <a class="portfolio-btn" href="~/temp/img/portfolio-4.jpg" data-lightbox="portfolio">
-                        <i class="fa fa-plus text-primary" style="font-size: 60px;"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 p-0 portfolio-item second">
-                <div class="position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="~/temp/img/portfolio-5.jpg" alt="">
-                    <a class="portfolio-btn" href="~/temp/img/portfolio-5.jpg" data-lightbox="portfolio">
-                        <i class="fa fa-plus text-primary" style="font-size: 60px;"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 p-0 portfolio-item third">
-                <div class="position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="~/temp/img/portfolio-6.jpg" alt="">
-                    <a class="portfolio-btn" href="~/temp/img/portfolio-6.jpg" data-lightbox="portfolio">
-                        <i class="fa fa-plus text-primary" style="font-size: 60px;"></i>
-                    </a>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>
