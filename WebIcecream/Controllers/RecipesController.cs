@@ -121,12 +121,12 @@ namespace WebIcecream.Controllers
                     string createdImageName = await _fileService.SaveFileAsync(recipeToUpdate.ImageFile, allowedFileExtensions);
                     recipeToUpdate.ImageUrl = createdImageName;
 
-                    // Update existing recipe's ImageUrl with the new one
+                    
                     existingRecipe.ImageUrl = createdImageName;
                 }
                 else
                 {
-                    // If no new image is uploaded, retain the existing ImageUrl
+                    
                     recipeToUpdate.ImageUrl = existingRecipe.ImageUrl;
                 }
 

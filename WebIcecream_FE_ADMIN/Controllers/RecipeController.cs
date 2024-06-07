@@ -123,6 +123,8 @@ namespace WebIcecream_FE_ADMIN.Controllers
         {
             try
             {
+                string oldImageUrl = recipe.ImageUrl; 
+
                 if (image != null)
                 {
                     var fileName = Path.GetFileName(image.FileName);
@@ -133,7 +135,17 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         await image.CopyToAsync(stream);
                     }
 
-                    recipe.ImageUrl = fileName;
+                    
+                    var request = HttpContext.Request;
+                    var baseUrl = $"{request.Scheme}://{request.Host}";
+
+                  
+                    recipe.ImageUrl = $"{baseUrl}/images/{fileName}";
+                }
+                else
+                {
+                    
+                    recipe.ImageUrl = oldImageUrl;
                 }
 
                 using (var content = new MultipartFormDataContent())
@@ -164,7 +176,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Failed to update recipe.";
+                        TempData["ErrorMessage"] = "";
                     }
                 }
             }
@@ -175,6 +187,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
 
             return RedirectToAction("Index");
         }
+
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {

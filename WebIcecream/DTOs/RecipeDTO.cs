@@ -12,8 +12,7 @@
 
         [Required(ErrorMessage = "Procedure is required")]
         public string Procedure { get; set; }
-
-        [Required(ErrorMessage = "ImageUrl file is required")]
+        [Required(ErrorMessage = "Procedure is required")]
         public string ImageUrl { get; set; }
   
     }
@@ -29,10 +28,10 @@
         [Required(ErrorMessage = "Ingredients are required")]
         public string Ingredients { get; set; }
 
-        [Required(ErrorMessage = "Procedure is required")]
+        
         public string Procedure { get; set; }
 
-        [Required(ErrorMessage = "ImageUrl file is required")]
+       
         public string ImageUrl { get; set; }
 
         public IFormFile ImageFile { get; set; }
