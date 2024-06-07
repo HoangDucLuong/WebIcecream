@@ -25,5 +25,13 @@ public partial class User
 
     public bool IsActive { get; set; }
 
+    public int? PackageId { get; set; }
+
+    public DateTime? PackageStartDate { get; set; }
+
+    public DateTime? PackageEndDate { get; set; }
+
+    public virtual MembershipPackage? Package { get; set; }
+
     public virtual UserAccount? UserAccount { get; set; }
 }
