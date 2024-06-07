@@ -35,7 +35,10 @@ builder.Services.AddScoped<IServiceMail, MailService>();
 
 // Register repositories and other services
 builder.Services.AddTransient<IRecipeRepository, RecipeRepository>();
+builder.Services.AddTransient<INewRecipeRepository, NewRecipeRepository>();
+builder.Services.AddTransient<IBookRepository, BookRepository>();
 builder.Services.AddTransient<IFileService, FileService>();
+builder.Services.AddHttpContextAccessor();
 
 // Configure CORS
 builder.Services.AddCors(options =>

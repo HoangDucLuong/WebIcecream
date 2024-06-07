@@ -17,7 +17,7 @@ public partial class NewRecipe
 
     public string? ImageUrl { get; set; }
 
-    public DateOnly SubmissionDate { get; set; }
+    public DateTime SubmissionDate { get; set; }
 
     public string? Status { get; set; }
 

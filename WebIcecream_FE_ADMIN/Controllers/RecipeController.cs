@@ -133,7 +133,6 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         await image.CopyToAsync(stream);
                     }
 
-                    // Chỉ lưu tên file, không bao gồm đường dẫn đầy đủ
                     recipe.ImageUrl = fileName;
                 }
 

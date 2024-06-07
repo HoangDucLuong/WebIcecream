@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using WebIcecream.Data.Repositories;
+using WebIcecream.Service;
 
 namespace WebIcecream.Controllers
 {
@@ -13,10 +15,16 @@ namespace WebIcecream.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
+        private readonly IFileService _fileService;
+        private readonly IBookRepository _bookRepo;
+        private readonly ILogger<BooksController> _logger;
         private readonly ProjectDak3Context _context;
 
-        public BooksController(ProjectDak3Context context)
+        public BooksController(IFileService fileService, IBookRepository bookRepo, ILogger<BooksController> logger, ProjectDak3Context context)
         {
+            _fileService = fileService;
+            _bookRepo = bookRepo;
+            _logger = logger;
             _context = context;
         }
 
@@ -57,50 +65,6 @@ namespace WebIcecream.Controllers
             return Ok(book);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, [FromForm] BookDTO bookDTO, [FromForm] IFormFile image)
-        {
-            if (id != bookDTO.BookId)
-            {
-                return BadRequest();
-            }
-
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            book.Title = bookDTO.Title;
-            book.Description = bookDTO.Description;
-            book.Price = bookDTO.Price;
-
-            if (image != null)
-            {
-                book.ImageUrl = await SaveImageAsync(image);
-            }
-
-            _context.Entry(book).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
         [HttpPost]
         public async Task<ActionResult<BookDTO>> PostBook([FromForm] BookDTO bookDTO, [FromForm] IFormFile image)
         {
@@ -130,6 +94,58 @@ namespace WebIcecream.Controllers
             return CreatedAtAction(nameof(GetBook), new { id = bookDTO.BookId }, bookDTO);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutBook(int id, [FromForm] UpdateBookDTO updatebookDTO)
+        {
+            try
+            {
+                if (id != updatebookDTO.BookId)
+                {
+                    return BadRequest("ID in URL and form body does not match.");
+                }
+
+                var existingBook = await _bookRepo.FindBookByIdAsync(id);
+                if (existingBook == null)
+                {
+                    return NotFound($"Book with ID: {id} not found");
+                }
+
+                string oldImage = existingBook.ImageUrl;
+                if (updatebookDTO.ImageFile != null)
+                {
+                    if (updatebookDTO.ImageFile.Length > 5 * 1024 * 1024)
+                    {
+                        return BadRequest("File size should not exceed 5 MB");
+                    }
+
+                    string[] allowedFileExtensions = { ".jpg", ".jpeg", ".png" };
+                    string createdImageName = await _fileService.SaveFileAsync(updatebookDTO.ImageFile, allowedFileExtensions);
+                    updatebookDTO.ImageUrl = createdImageName;
+
+                    existingBook.ImageUrl = createdImageName;
+                }
+                else
+                {
+                    updatebookDTO.ImageUrl = existingBook.ImageUrl;
+                }
+
+                existingBook.Title = updatebookDTO.Title;
+                existingBook.Description = updatebookDTO.Description;
+                existingBook.Price = updatebookDTO.Price;
+
+                var updatedBook = await _bookRepo.UpdateBookAsync(existingBook);
+
+                if (updatebookDTO.ImageFile != null)
+                    _fileService.DeleteFile(oldImage);
+
+                return Ok(updatedBook);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
 
         // DELETE: api/Books/5
         [HttpDelete("{id}")]

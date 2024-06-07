@@ -1,78 +1,75 @@
 ﻿@model WebIcecream_FE.Models.UserViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "User Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<h1>Details</h1>
-
-<div>
-    <h4>UserViewModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2" hidden>
-            @Html.DisplayNameFor(model => model.UserId)
-        </dt>
-        <dd class = "col-sm-10" hidden>
-            @Html.DisplayFor(model => model.UserId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FullName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FullName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Dob)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Dob)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Gender)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Gender)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PaymentStatus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PaymentStatus)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RegistrationDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RegistrationDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsActive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsActive)
-        </dd>
-    </dl>
+<!-- Header Start -->
+<div class="jumbotron jumbotron-fluid page-header" style="margin-bottom: 90px;">
+    <div class="container text-center py-5">
+        <h1 class="text-white display-3 mt-lg-5">Profile</h1>
+        <div class="d-inline-flex align-items-center text-white">
+            <p class="m-0"><a class="text-white" href="/">Home</a></p>
+            <i class="fa fa-circle px-3"></i>
+            <p class="m-0">Profile</p>
+        </div>
+    </div>
 </div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new {  id = Model.UserId }) |
-    @Html.ActionLink("ChangePassword", "ChangePassword", "ChangePassword", new { username = ViewBag.Username })
+<!-- Header End -->
+<!-- User Details Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <h1 class="section-title position-relative text-center mb-5">User Details</h1>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="bg-light rounded p-5">
+                    <div class="row mb-3">
+                        <dt class="col-sm-4 text-end">Full Name</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.FullName)</dd>
+                    </div>
+                    <div class="row mb-3">
+                        <dt class="col-sm-4 text-end">Date of Birth</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Dob)</dd>
+                    </div>
+                    <div class="row mb-3">
+                        <dt class="col-sm-4 text-end">Address</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Address)</dd>
+                    </div>
+                    <div class="row mb-3">
+                        <dt class="col-sm-4 text-end">Gender</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Gender)</dd>
+                    </div>
+                    <div class="row mb-3">
+                        <dt class="col-sm-4 text-end">Email</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Email)</dd>
+                    </div>
+                    <div class="row mb-3">
+                        <dt class="col-sm-4 text-end">Phone Number</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.PhoneNumber)</dd>
+                    </div>
+                    <div class="row mb-3">
+                        <dt class="col-sm-4 text-end">Payment Status</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.PaymentStatus)</dd>
+                    </div>
+                    <div class="row mb-3">
+                        <dt class="col-sm-4 text-end">Registration Date</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.RegistrationDate)</dd>
+                    </div>
+                    <div class="row mb-3">
+                        <dt class="col-sm-4 text-end">Active Status</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.IsActive)</dd>
+                    </div>
+                    <div class="text-center mt-4">
+                        @Html.ActionLink("Edit", "Edit", new { id = Model.UserId }, new { @class = "btn btn-primary mx-2" })
+                        @Html.ActionLink("Change Password", "ChangePassword", "ChangePassword", new { username = ViewBag.Username }, new { @class = "btn btn-secondary mx-2" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+<!-- User Details End -->

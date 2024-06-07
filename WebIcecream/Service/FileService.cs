@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using System;
 using System.IO;
 using System.Linq;
@@ -16,10 +17,12 @@ namespace WebIcecream.Service
     public class FileService : IFileService
     {
         private readonly IWebHostEnvironment _environment;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public FileService(IWebHostEnvironment environment)
+        public FileService(IWebHostEnvironment environment, IHttpContextAccessor httpContextAccessor)
         {
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
         public async Task<string> SaveFileAsync(IFormFile imageFile, string[] allowedFileExtensions)
@@ -53,7 +56,11 @@ namespace WebIcecream.Service
                 await imageFile.CopyToAsync(stream);
             }
 
-            return fileName;
+            var request = _httpContextAccessor.HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}";
+            var imageUrl = $"{baseUrl}/images/{fileName}";
+
+            return imageUrl;
         }
 
         public void DeleteFile(string fileName)

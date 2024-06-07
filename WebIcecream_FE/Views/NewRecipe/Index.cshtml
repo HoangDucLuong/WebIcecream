@@ -1,0 +1,80 @@
+﻿@model IEnumerable<WebIcecream_FE.Models.NewRecipeViewModel>
+
+@{
+    ViewData["Title"] = "Recipe Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .table th, .table td {
+        padding: 1rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn {
+        margin-right: 0.5rem;
+    }
+
+    img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+</style>
+
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h1 class="section-title position-relative d-inline-block">Recipe Management</h1>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col text-right">
+            <a class="btn btn-primary" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Flavor</th>
+                            <th>Ingredients</th>
+                            <th>Procedure</th>
+                            <th>Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Flavor</td>
+                                <td>@item.Ingredients</td>
+                                <td>@item.Procedure</td>
+                                <td>
+                                    <img src="@item.ImageUrl" alt="Recipe Image" />
+                                </td>
+
+                                <td>
+                                    <a class="btn btn-sm btn-info" asp-action="Edit" asp-route-id="@item.RecipeId"><i class="fa fa-edit"></i> Edit</a>
+                                    <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.RecipeId"><i class="fa fa-info-circle"></i> Details</a>
+                                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.RecipeId"><i class="fa fa-trash"></i> Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Pagination -->
+</div>
+
+

@@ -7,16 +7,16 @@
 
 <style>
     .table th, .table td {
-        padding: 1rem; /* Điều chỉnh khoảng cách giữa các ô */
+        padding: 1rem;
     }
 
     .section-title {
-        font-size: 2.5rem; /* Điều chỉnh kích thước tiêu đề */
-        margin-bottom: 2rem; /* Khoảng cách phía dưới tiêu đề */
+        font-size: 2.5rem;
+        margin-bottom: 2rem; 
     }
 
     .btn {
-        margin-right: 0.5rem; /* Điều chỉnh khoảng cách giữa các nút */
+        margin-right: 0.5rem;
     }
 
     img {
@@ -63,7 +63,7 @@
                                 <td>
                                     @if (!string.IsNullOrEmpty(item.ImageUrl) && !item.ImageUrl.StartsWith("http"))
                                     {
-                                        <img src="https://localhost:7018/images/@item.ImageUrl" alt="Recipe Image" />
+                                        <img src="@item.ImageUrl" alt="Recipe Image" />
                                     }
                                     else
                                     {
