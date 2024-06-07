@@ -1,23 +1,22 @@
 ﻿@model IEnumerable<WebIcecream_FE_ADMIN.Models.NewRecipeViewModel>
 
-
 @{
-	ViewData["Title"] = "New Recipe Management";
-	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "New Recipe Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <style>
     .table th, .table td {
-        padding: 1rem; /* Điều chỉnh khoảng cách giữa các ô */
+        padding: 1rem;
     }
 
     .section-title {
-        font-size: 2.5rem; /* Điều chỉnh kích thước tiêu đề */
-        margin-bottom: 2rem; /* Khoảng cách phía dưới tiêu đề */
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
     }
 
     .btn {
-        margin-right: 0.5rem; /* Điều chỉnh khoảng cách giữa các nút */
+        margin-right: 0.5rem;
     }
 
     img {
@@ -50,6 +49,7 @@
                             <th>@Html.DisplayNameFor(model => model.First().Ingredients)</th>
                             <th>@Html.DisplayNameFor(model => model.First().Procedure)</th>
                             <th>@Html.DisplayNameFor(model => model.First().ImageUrl)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().Status)</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -64,7 +64,15 @@
                                 <td>
                                     <img src="@item.ImageUrl" alt="Recipe Image" />
                                 </td>
+                                <td>@Html.DisplayFor(modelItem => item.Status)</td>
                                 <td>
+                                    @if (item.Status == "waiting")
+                                    {
+                                        <form asp-action="Approve" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@item.RecipeId" />
+                                            <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i> Approve</button>
+                                        </form>
+                                    }
                                     <a class="btn btn-sm btn-info" asp-action="Edit" asp-route-id="@item.RecipeId"><i class="fa fa-edit"></i> Edit</a>
                                     <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.RecipeId"><i class="fa fa-info-circle"></i> Details</a>
                                     <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.RecipeId"><i class="fa fa-trash"></i> Delete</a>

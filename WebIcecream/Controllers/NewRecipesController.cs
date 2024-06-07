@@ -159,6 +159,33 @@ namespace WebIcecream.Controllers
             }
         }
 
+        [HttpPut("ApproveRecipe/{id}")]
+        public async Task<IActionResult> ApproveRecipe(int id)
+        {
+            var existingRecipe = await _newrecipeRepo.FindNewRecipeByIdAsync(id);
+            if (existingRecipe == null)
+            {
+                return NotFound($"Recipe with ID: {id} not found");
+            }
+
+            existingRecipe.Status = "approved";
+
+            var newRecipe = new Recipe
+            {
+                Flavor = existingRecipe.Flavor,
+                Ingredients = existingRecipe.Ingredients,
+                Procedure = existingRecipe.Procedure,
+                ImageUrl = existingRecipe.ImageUrl
+            };
+
+            _context.Recipes.Add(newRecipe);
+            await _context.SaveChangesAsync();
+
+            await _newrecipeRepo.UpdateNewRecipeAsync(existingRecipe);
+
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteNewRecipe(int id)
         {

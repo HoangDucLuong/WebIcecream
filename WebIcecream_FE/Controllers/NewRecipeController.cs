@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using WebIcecream_FE.Models;
 using System.IO;
+using System.Security.Claims;
 
 namespace WebIcecream_FE.Controllers
 {
@@ -12,12 +14,34 @@ namespace WebIcecream_FE.Controllers
         Uri baseAddress = new Uri("https://localhost:7018/api");
         private readonly HttpClient _httpClient;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public NewRecipeController(IWebHostEnvironment webHostEnvironment)
+        public NewRecipeController(IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
             _webHostEnvironment = webHostEnvironment;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        private int? GetUserIdFromToken()
+        {
+            var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId");
+
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    return userId;
+                }
+            }
+
+            return null;
         }
 
         public async Task<IActionResult> Index()
@@ -48,6 +72,19 @@ namespace WebIcecream_FE.Controllers
         {
             try
             {
+                // Lấy UserID của người đang đăng nhập từ token
+                var userId = GetUserIdFromToken();
+                if (userId == null)
+                {
+                    TempData["ErrorMessage"] = "User not logged in.";
+                    return RedirectToAction("Index");
+                }
+
+                // Đặt giá trị mặc định cho UserId, Status và SubmissionDate
+                recipe.UserId = userId.Value;
+                recipe.Status = "waiting";
+                recipe.SubmissionDate = DateTime.Now;
+
                 if (image != null)
                 {
                     var fileName = Path.GetFileName(image.FileName);
