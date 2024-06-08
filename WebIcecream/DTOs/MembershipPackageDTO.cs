@@ -2,7 +2,7 @@
 {
     public class MembershipPackageDTO
     {
-        public int PackageId { get; set; }
+        public int? PackageId { get; set; }
 
         public string PackageName { get; set; } = null!;
 

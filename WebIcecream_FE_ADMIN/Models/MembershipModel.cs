@@ -2,10 +2,11 @@
 {
     public class MembershipModel
     {
-        public int PackageId { get; set; }
+        public int? PackageId { get; set; }
 
-        public string PackageName { get; set; }
-        public double Price { get; set; }
+        public string PackageName { get; set; } = null!;
+
+        public decimal Price { get; set; }
 
         public int DurationDays { get; set; }
 

@@ -65,11 +65,8 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="PackageId"></label>
-                    <select id="PackageId" name="Package">
-                        @foreach (var item in (List<MembershipPackageModel>)ViewData["Membership"])
-                        {
-                            <option value="@item.PackageId">@item.PackageName</option>
-                        }
+                    <select asp-for="PackageId" class="form-control" asp-items="@(new SelectList((List<MembershipPackageModel>)ViewData["Membership"], "PackageId", "PackageName"))">
+                        <option value="">-- Select Package --</option>
                     </select>
                     <span asp-validation-for="PackageId" class="text-danger"></span>
                 </div>

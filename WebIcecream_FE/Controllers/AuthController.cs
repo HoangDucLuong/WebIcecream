@@ -76,6 +76,7 @@ namespace WebIcecream_FE.Controllers
         {
             var client = _httpClientFactory.CreateClient();
             var response = await client.GetAsync("https://localhost:7018/api/MembershipPackages/GetMembershipPackages");
+
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
@@ -83,22 +84,23 @@ namespace WebIcecream_FE.Controllers
                 ViewData["Membership"] = memberships;
 
                 return View();
-
             }
             else
             {
+                // Xử lý khi không lấy được danh sách Membership
+                TempData["ErrorMessage"] = "Failed to retrieve Membership packages.";
                 return View();
-
             }
         }
-
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            var selectedPackageId = model.PackageId; // Debug here to see the value
+
             if (!ModelState.IsValid)
             {
                 return View(model);
-            }   
+            }
 
             var client = _httpClientFactory.CreateClient();
             var json = JsonConvert.SerializeObject(model);
