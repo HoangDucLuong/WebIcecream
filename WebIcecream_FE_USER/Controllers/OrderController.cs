@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -60,7 +61,7 @@ namespace WebIcecream_FE_USER.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var client = _httpClientFactory.CreateClient("ApiClient");
-            var response = await client.GetAsync($"api/orders/{id}");
+            var response = await client.GetAsync($"https://localhost:7018/api/Orders/GetOrderById/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
@@ -82,14 +83,20 @@ namespace WebIcecream_FE_USER.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            // Set UserId for the order being created
+            // Create a new OrderViewModel instance
             var order = new OrderViewModel
             {
                 UserId = userId.Value // Assign UserId to the order
+                                      // Set other properties of the order as needed
             };
 
+            // Store order information in session
+            HttpContext.Session.SetString("OrderInfo", JsonConvert.SerializeObject(order));
+
+            // Return the Create view to display the order creation form
             return View(order);
         }
+
 
         // POST: Order/Create
         [HttpPost]
@@ -98,29 +105,14 @@ namespace WebIcecream_FE_USER.Controllers
         {
             if (ModelState.IsValid)
             {
-                var client = _httpClientFactory.CreateClient("ApiClient");
-                var json = JsonConvert.SerializeObject(order);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                // Store the order information in session
+                HttpContext.Session.SetString("OrderInfo", JsonConvert.SerializeObject(order));
 
-                try
-                {
-                    var response = await client.PostAsync("https://localhost:7018/api/orders/createorder", content);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, "Failed to create order. Please try again later.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-                }
+                // Redirect to the Payment action in Home controller of VNPayAPI area
+                return RedirectToAction("Payment", "Home", new { area = "VNPayAPI", amount = order.Cost, infor = "Thông tin đơn hàng", orderinfor = order.OrderId });
             }
 
+            // If model state is not valid, return the Create view with the order model to correct errors
             return View(order);
         }
 
