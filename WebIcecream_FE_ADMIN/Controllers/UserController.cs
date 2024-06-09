@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.Text;
 using WebIcecream_FE_ADMIN.Models;
 using X.PagedList;
+using X.PagedList.Mvc.Core;
 
 namespace WebIcecream_FE_ADMIN.Controllers
 {
@@ -16,6 +17,20 @@ namespace WebIcecream_FE_ADMIN.Controllers
             _client = new HttpClient();
             _client.BaseAddress = baseAddress;
         }
+        private List<MembershipModel> GetPackages()
+        {
+            List<MembershipModel> memberships = new List<MembershipModel>();
+            HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/MembershipPackages/GetMembershipPackages").Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                memberships = JsonConvert.DeserializeObject<List<MembershipModel>>(data);
+            }
+
+            return memberships;
+        }
+
 
         [HttpGet]
         public IActionResult Index(int? page)
@@ -27,6 +42,14 @@ namespace WebIcecream_FE_ADMIN.Controllers
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 list = JsonConvert.DeserializeObject<List<UserViewModel>>(data);
+
+                var memberships = GetPackages();
+
+                foreach (var user in list)
+                {
+                    var package = memberships.FirstOrDefault(p => p.PackageId == user.PackageId);
+                    user.PackageName = package != null ? package.PackageName : "Unknown";
+                }
             }
 
             int pageSize = 10;
@@ -34,6 +57,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
 
             return View(list.ToPagedList(pageNumber, pageSize));
         }
+
 
         [HttpGet]
         public IActionResult Create()
@@ -96,7 +120,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
 
                 string data = JsonConvert.SerializeObject(model);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _client.PutAsync($"{_client.BaseAddress}/User/PutUser", content).Result;
+                HttpResponseMessage response = _client.PutAsync($"{_client.BaseAddress}/User/PutUser/{id}", content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -121,18 +145,19 @@ namespace WebIcecream_FE_ADMIN.Controllers
         {
             try
             {
+                UserViewModel model = new UserViewModel();
                 HttpResponseMessage response = _client.GetAsync($"{_client.BaseAddress}/User/GetUser/{id}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     string data = response.Content.ReadAsStringAsync().Result;
-                    UserViewModel model = JsonConvert.DeserializeObject<UserViewModel>(data);
-                    return View(model);
+                    model = JsonConvert.DeserializeObject<UserViewModel>(data);
                 }
                 else
                 {
                     TempData["errorMessage"] = "User not found for deletion.";
                     return RedirectToAction("Index");
                 }
+                return View(model);
             }
             catch (Exception ex)
             {

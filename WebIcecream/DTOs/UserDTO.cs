@@ -21,7 +21,8 @@
         public DateTime? RegistrationDate { get; set; }
 
         public bool IsActive { get; set; }
-        public int PackageId { get; set; }
+        public int? PackageId { get; set; }
+        public string PackageName { get; set; }
         public DateTime? PackageStartDate { get; set; }
         public DateTime? PackageEndDate { get; set; }
 

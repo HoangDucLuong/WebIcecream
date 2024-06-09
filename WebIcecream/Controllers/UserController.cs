@@ -32,7 +32,9 @@ namespace WebIcecream.Controllers
                     Address = m.Address,
                     PaymentStatus = m.PaymentStatus,
                     RegistrationDate = m.RegistrationDate,
-                    IsActive = m.IsActive
+                    IsActive = m.IsActive,
+                    PackageId = m.PackageId,
+                    PackageName = m.Package != null ? m.Package.PackageName : null  // Include PackageName
                 })
                 .ToListAsync();
 
@@ -55,7 +57,9 @@ namespace WebIcecream.Controllers
                     Address = m.Address,
                     PaymentStatus = m.PaymentStatus,
                     RegistrationDate = m.RegistrationDate,
-                    IsActive = m.IsActive
+                    IsActive = m.IsActive,
+                    PackageId = m.PackageId,
+                    PackageName = m.Package != null ? m.Package.PackageName : null  // Include PackageName
                 })
                 .FirstOrDefaultAsync();
 
@@ -66,7 +70,6 @@ namespace WebIcecream.Controllers
 
             return Ok(user);
         }
-        
 
         [HttpPost]
         public async Task<ActionResult<UserDTO>> PostUser(UserDTO userDto)
@@ -81,13 +84,15 @@ namespace WebIcecream.Controllers
                 Address = userDto.Address,
                 PaymentStatus = userDto.PaymentStatus,
                 RegistrationDate = userDto.RegistrationDate,
-                IsActive = userDto.IsActive
+                IsActive = userDto.IsActive,
+                PackageId = userDto.PackageId
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
             userDto.UserId = user.UserId;
+            userDto.PackageName = user.Package != null ? user.Package.PackageName : null;
 
             return CreatedAtAction(nameof(GetUser), new { id = userDto.UserId }, userDto);
         }
@@ -115,6 +120,7 @@ namespace WebIcecream.Controllers
             user.PaymentStatus = userDto.PaymentStatus;
             user.RegistrationDate = userDto.RegistrationDate;
             user.IsActive = userDto.IsActive;
+            user.PackageId = userDto.PackageId;
 
             _context.Entry(user).State = EntityState.Modified;
             try

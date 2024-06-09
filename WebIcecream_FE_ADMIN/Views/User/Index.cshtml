@@ -7,16 +7,16 @@
 
 <style>
     .table th, .table td {
-        padding: 1rem; /* Điều chỉnh khoảng cách giữa các ô */
+        padding: 1rem; 
     }
 
     .section-title {
-        font-size: 2.5rem; /* Điều chỉnh kích thước tiêu đề */
-        margin-bottom: 2rem; /* Khoảng cách phía dưới tiêu đề */
+        font-size: 2.5rem;
+        margin-bottom: 2rem; 
     }
 
     .btn {
-        margin-right: 0.5rem; /* Điều chỉnh khoảng cách giữa các nút */
+        margin-right: 0.5rem; 
     }
 </style>
 
@@ -24,12 +24,6 @@
     <div class="row mb-4">
         <div class="col text-center">
             <h1 class="section-title position-relative d-inline-block">User Management</h1>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col text-right">
-            <a class="btn btn-primary" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
         </div>
     </div>
 
@@ -49,6 +43,7 @@
                             <th>@Html.DisplayNameFor(model => model.PaymentStatus)</th>
                             <th>@Html.DisplayNameFor(model => model.RegistrationDate)</th>
                             <th>@Html.DisplayNameFor(model => model.IsActive)</th>
+                            <th>@Html.DisplayNameFor(model => model.PackageName)</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -66,9 +61,8 @@
                                 <td>@Html.DisplayFor(modelItem => item.PaymentStatus)</td>
                                 <td>@Html.DisplayFor(modelItem => item.RegistrationDate)</td>
                                 <td>@Html.DisplayFor(modelItem => item.IsActive)</td>
-                                <td>
-                                    <a class="btn btn-sm btn-info" asp-action="Edit" asp-route-id="@item.UserId"><i class="fa fa-edit"></i> Edit</a>
-                                    <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.UserId"><i class="fa fa-info-circle"></i> Details</a>
+                                <td>@Html.DisplayFor(modelItem => item.PackageName)</td>
+                                <td>                                    
                                     <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.UserId"><i class="fa fa-trash"></i> Delete</a>
                                 </td>
                             </tr>
