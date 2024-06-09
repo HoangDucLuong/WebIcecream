@@ -1,4 +1,7 @@
-﻿namespace WebIcecream_FE_ADMIN.Models
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
+
+namespace WebIcecream_FE_ADMIN.Models
 {
     public class RecipeViewModel
     {
@@ -11,6 +14,7 @@
         public string Procedure { get; set; }
 
         public string ImageUrl { get; set; }
+        [Required(ErrorMessage = "Please choose an image.")]
         public IFormFile Image{ get; set; }
     }
 }

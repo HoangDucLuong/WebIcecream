@@ -1,4 +1,7 @@
-﻿namespace WebIcecream_FE_ADMIN.Models
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
+
+namespace WebIcecream_FE_ADMIN.Models
 {
     public class ProductViewModel
     {
@@ -11,7 +14,8 @@
         public string ImageUrl { get; set; }
 
         public decimal Price { get; set; }
-
-        public IFormFile Image { get; set; }        
+        [Required(ErrorMessage = "Please choose an image.")]
+        public IFormFile Image { get; set; }
+        public bool KeepCurrentImage { get; set; }
     }
 }

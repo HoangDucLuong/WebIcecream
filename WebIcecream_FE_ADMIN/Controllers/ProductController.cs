@@ -121,6 +121,13 @@ namespace WebIcecream_FE_ADMIN.Controllers
         {
             try
             {
+                // Lấy lại ImageUrl cũ từ TempData nếu không có hình mới
+                if (TempData.ContainsKey("OldImageUrl") && book.KeepCurrentImage)
+                {
+                    book.ImageUrl = TempData["OldImageUrl"].ToString();
+                }
+
+                // Kiểm tra xem có tải lên hình mới không
                 if (image != null)
                 {
                     var fileName = Path.GetFileName(image.FileName);
@@ -131,9 +138,18 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         await image.CopyToAsync(stream);
                     }
 
+                    // Lưu tên file hình mới vào book.ImageUrl
                     book.ImageUrl = fileName;
                 }
 
+                // Nếu không có hình mới và không chọn giữ nguyên hình cũ
+                if (image == null && !book.KeepCurrentImage)
+                {
+                    ModelState.AddModelError(nameof(ProductViewModel.Image), "Please choose an image.");
+                    return View("Edit", book); // Trả về view "Edit" với model hiện tại để người dùng chọn hình ảnh
+                }
+
+                // Chuẩn bị nội dung cho yêu cầu PUT
                 using (var content = new MultipartFormDataContent())
                 {
                     content.Add(new StringContent(book.BookId.ToString()), "BookId");
@@ -142,6 +158,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     content.Add(new StringContent(book.Price.ToString()), "Price");
                     content.Add(new StringContent(book.ImageUrl), "ImageUrl");
 
+                    // Nếu có tải lên hình mới thì thêm vào content
                     if (image != null)
                     {
                         var fileContent = new StreamContent(image.OpenReadStream());
@@ -154,7 +171,9 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         content.Add(fileContent);
                     }
 
-                    var response = await _httpClient.PutAsync($"{_httpClient.BaseAddress}/Books/PutBook/{book.BookId}", content);
+                    // Gửi yêu cầu PUT để cập nhật thông tin sách
+                    var apiUrl = $"{_httpClient.BaseAddress}/Books/PutBook/{book.BookId}";
+                    var response = await _httpClient.PutAsync(apiUrl, content);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -162,7 +181,8 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Failed to update book.";
+                        var errorMessage = await response.Content.ReadAsStringAsync();
+                        TempData["ErrorMessage"] = $"Failed to update book. Status code: {response.StatusCode}, Error: {errorMessage}";
                     }
                 }
             }

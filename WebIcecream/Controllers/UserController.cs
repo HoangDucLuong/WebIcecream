@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebIcecream.Models;
+using System;
 
 namespace WebIcecream.Controllers
 {
@@ -156,6 +157,24 @@ namespace WebIcecream.Controllers
             return NoContent();
         }
 
+        [HttpPost("{userId}")]
+        public async Task<IActionResult> RenewMembership(int userId, RenewMembershipDTO model)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.PackageId = model.PackageId;
+            user.PackageStartDate = DateTime.UtcNow; // Assuming renewal starts from now
+            user.PackageEndDate = DateTime.UtcNow.AddYears(1); // Assuming a 1-year membership
+
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
@@ -173,6 +192,7 @@ namespace WebIcecream.Controllers
 
             return NoContent();
         }
+
         [HttpGet("{username}")]
         public async Task<ActionResult<bool>> IsActive(string username)
         {
@@ -188,7 +208,6 @@ namespace WebIcecream.Controllers
             bool isActive = user.User.PackageEndDate >= DateTime.Now;
             return Ok(isActive);
         }
-
 
         private bool UserExists(int id)
         {

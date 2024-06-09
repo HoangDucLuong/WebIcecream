@@ -123,30 +123,28 @@ namespace WebIcecream_FE_ADMIN.Controllers
         {
             try
             {
-                string oldImageUrl = recipe.ImageUrl; 
+                string oldImageUrl = recipe.ImageUrl;
 
-                if (image != null)
+                if (image == null)
                 {
-                    var fileName = Path.GetFileName(image.FileName);
-                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await image.CopyToAsync(stream);
-                    }
-
-                    
-                    var request = HttpContext.Request;
-                    var baseUrl = $"{request.Scheme}://{request.Host}";
-
-                  
-                    recipe.ImageUrl = $"{baseUrl}/images/{fileName}";
+                    ModelState.AddModelError(nameof(RecipeViewModel.Image), "Please choose an image.");
+                    return View("Edit", recipe); // Trả về view "Edit" với model hiện tại để người dùng chọn hình ảnh
                 }
-                else
+
+                var fileName = Path.GetFileName(image.FileName);
+                var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    
-                    recipe.ImageUrl = oldImageUrl;
+                    await image.CopyToAsync(stream);
                 }
+
+                // Get the base URL of the application
+                var request = HttpContext.Request;
+                var baseUrl = $"{request.Scheme}://{request.Host}";
+
+                // Combine the base URL with the relative path to create the full URL
+                recipe.ImageUrl = $"{baseUrl}/images/{fileName}";
 
                 using (var content = new MultipartFormDataContent())
                 {
@@ -156,17 +154,14 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     content.Add(new StringContent(recipe.Procedure), "Procedure");
                     content.Add(new StringContent(recipe.ImageUrl), "ImageUrl");
 
-                    if (image != null)
+                    var fileContent = new StreamContent(image.OpenReadStream());
+                    fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
                     {
-                        var fileContent = new StreamContent(image.OpenReadStream());
-                        fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                        {
-                            Name = "ImageFile",
-                            FileName = image.FileName
-                        };
-                        fileContent.Headers.ContentType = new MediaTypeHeaderValue(image.ContentType);
-                        content.Add(fileContent);
-                    }
+                        Name = "ImageFile",
+                        FileName = image.FileName
+                    };
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(image.ContentType);
+                    content.Add(fileContent);
 
                     var response = await _httpClient.PutAsync($"{_httpClient.BaseAddress}/Recipes/PutRecipe/{recipe.RecipeId}", content);
 
@@ -176,7 +171,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "";
+                        TempData["ErrorMessage"] = "Failed to update recipe.";
                     }
                 }
             }
@@ -194,11 +189,11 @@ namespace WebIcecream_FE_ADMIN.Controllers
             var response = await _httpClient.DeleteAsync($"{_httpClient.BaseAddress}/Recipes/DeleteRecipe/{id}");
             if (response.IsSuccessStatusCode)
             {
-                TempData["SuccessMessage"] = "Recipe deleted successfully.";
+                TempData["SuccessMessage"] = "Product deleted successfully.";
             }
             else
             {
-                TempData["ErrorMessage"] = "Failed to delete recipe.";
+                TempData["SuccessMessage"] = "Product deleted successfully.";
             }
 
             return RedirectToAction("Index");

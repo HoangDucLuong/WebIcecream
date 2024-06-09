@@ -81,5 +81,84 @@ namespace WebIcecream_FE_ADMIN.Controllers
 
             return RedirectToAction("Index");
         }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            ViewData["IsLoggedIn"] = true;
+            try
+            {
+                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/MembershipPackages/GetMembershipPackage/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var membership = JsonConvert.DeserializeObject<MembershipModel>(data);
+                    return View(membership);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = $"Failed to retrieve membership package. Status code: {response.StatusCode}";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, MembershipModel membership)
+        {
+            ViewData["IsLoggedIn"] = true;
+            try
+            {
+                var content = new StringContent(JsonConvert.SerializeObject(membership), System.Text.Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PutAsync($"{_httpClient.BaseAddress}/MembershipPackages/PutMembershipPackage/{id}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Membership package updated successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = $"Failed to update membership package. Status code: {response.StatusCode}";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+            }
+
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            ViewData["IsLoggedIn"] = true;
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{_httpClient.BaseAddress}/MembershipPackages/DeleteMembershipPackage/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Membership package deleted successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = $"Failed to delete membership package. Status code: {response.StatusCode}";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+            }
+
+            return RedirectToAction("Index");
+        }
+
     }
 }

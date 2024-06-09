@@ -1,0 +1,33 @@
+﻿@model List<WebIcecream_FE_USER.Models.MembershipPackageModel>
+
+@{
+    ViewData["Title"] = "Renew Membership";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Choose Membership Package to Renew</h1>
+
+@if (Model != null && Model.Count > 0)
+{
+    <form asp-action="RenewMembership" asp-controller="User" method="post">
+        <div class="form-group">
+            <label>Select Membership Package:</label>
+            <select class="form-control" name="PackageId">
+                @foreach (var package in Model)
+                {
+                    <option value="@package.PackageId">@package.PackageName - @package.Price USD (Duration: @package.DurationDays days)</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Renew Membership</button>
+    </form>
+}
+else
+{
+    <p>No membership packages available.</p>
+}
+
+@if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
+{
+    <p class="text-danger">@TempData["ErrorMessage"]</p>
+}

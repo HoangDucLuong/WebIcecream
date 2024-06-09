@@ -52,12 +52,20 @@ namespace WebIcecream_FE_USER.Controllers
                 var userRoleId = GetUserRoleIdFromToken();
                 var isActive = await IsUserActive(model.Username); // Assuming a method to check IsActive status
 
-                if (userRoleId == 1 && isActive)
+                if (userRoleId == 1)
                 {
-                    // Update login status after successful login
-                    ViewData["IsLoggedIn"] = true;
+                    if (isActive)
+                    {
+                        // Update login status after successful login
+                        ViewData["IsLoggedIn"] = true;
 
-                    return RedirectToAction("Index", "Home"); // Redirect to home page after successful login
+                        return RedirectToAction("Index", "Home"); // Redirect to home page after successful login
+                    }
+                    else
+                    {
+                        // Redirect to renew membership page
+                        return RedirectToAction("RenewMembership", "User");
+                    }
                 }
                 else
                 {

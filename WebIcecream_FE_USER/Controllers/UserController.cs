@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using WebIcecream_FE_USER.Models;
@@ -19,6 +20,66 @@ namespace WebIcecream_FE_USER.Controllers
             _httpClient.BaseAddress = new Uri("https://localhost:7018/api");
             _httpContextAccessor = httpContextAccessor;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> RenewMembership()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/MembershipPackages/GetMembershipPackages");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var memberships = JsonConvert.DeserializeObject<List<MembershipPackageModel>>(data);
+                    ViewData["Membership"] = memberships;
+
+                    return View(memberships); // Pass memberships to the view
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to retrieve Membership packages.";
+                    return View(); // Return the view even if data retrieval fails
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error retrieving Membership packages: {ex.Message}";
+                return View(); // Handle any exceptions and return the view
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> RenewMembership(RenewMembershipViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var userId = GetUserIdFromToken();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Error", "Home"); // Redirect to error page or handle as needed
+            }
+
+            // Call API to renew membership
+            var response = await _httpClient.PostAsJsonAsync($"{_httpClient.BaseAddress}/User/RenewMembership/{userId}", model);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Details"); // Redirect to details page after successful renewal
+            }
+            else
+            {
+                string errorResponse = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError("", $"Renewal failed: {errorResponse}");
+                return View(model);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> Details()
         {
@@ -41,6 +102,7 @@ namespace WebIcecream_FE_USER.Controllers
 
             return View("Error");
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
@@ -83,7 +145,7 @@ namespace WebIcecream_FE_USER.Controllers
             var response = await _httpClient.PutAsJsonAsync($"{_httpClient.BaseAddress}/User/PutUser/{userId}", userViewModel);
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Details"); 
+                return RedirectToAction("Details");
             }
 
             // Xử lý lỗi nếu không thành công

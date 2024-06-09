@@ -31,23 +31,20 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="ImageUrl" class="control-label"></label>
                 <input asp-for="ImageUrl" class="form-control" readonly />
                 <span asp-validation-for="ImageUrl" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" type="file" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
+                <img src="@Model.ImageUrl" alt="Current Image" style="max-width: 100%; height: auto;" />
             </div>
 
             <div class="form-group">
-                @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                {
-                    <img src="@Model.ImageUrl" alt="Current Image" style="max-width: 100%; height: auto;" />
-                }
+                <label asp-for="Image" class="control-label">Choose new image:</label>
+                <input asp-for="Image" type="file" class="form-control" />
+                <span asp-validation-for="Image" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -66,4 +63,3 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-

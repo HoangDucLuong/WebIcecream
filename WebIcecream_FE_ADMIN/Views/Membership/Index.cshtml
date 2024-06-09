@@ -59,6 +59,10 @@
                                 <td>@Html.DisplayFor(modelItem => item.PackageName)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Price)</td>
                                 <td>@Html.DisplayFor(modelItem => item.DurationDays)</td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.PackageId" class="btn btn-primary btn-sm">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@item.PackageId" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this package?');">Delete</a>
+                                </td>
                             </tr>
                         }
                     </tbody>
