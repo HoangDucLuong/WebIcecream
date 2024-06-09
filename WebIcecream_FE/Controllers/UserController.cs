@@ -83,7 +83,7 @@ namespace WebIcecream_FE.Controllers
             var response = await _httpClient.PutAsJsonAsync($"{_httpClient.BaseAddress}/User/PutUser/{userId}", userViewModel);
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Details"); // Chuyển hướng về trang chi tiết sau khi cập nhật thành công
+                return RedirectToAction("Details"); 
             }
 
             // Xử lý lỗi nếu không thành công
@@ -92,7 +92,6 @@ namespace WebIcecream_FE.Controllers
 
         private string GetUserIdFromToken()
         {
-            // Lấy token từ HttpContext (ví dụ lấy từ cookie hoặc từ các phương thức khác)
             var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
 
             if (token == null)
@@ -100,11 +99,9 @@ namespace WebIcecream_FE.Controllers
                 return null;
             }
 
-            // Giải mã token để lấy thông tin người dùng
             var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
 
-            // Lấy UserId từ token
             return jsonToken.Claims.FirstOrDefault(claim => claim.Type == "userId")?.Value;
         }
     }

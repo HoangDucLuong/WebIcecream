@@ -32,6 +32,7 @@ builder.Services.AddSession(options =>
 
 // Register your email service
 builder.Services.AddScoped<IServiceMail, MailService>();
+builder.Services.AddLogging();
 
 // Register repositories and other services
 builder.Services.AddTransient<IRecipeRepository, RecipeRepository>();

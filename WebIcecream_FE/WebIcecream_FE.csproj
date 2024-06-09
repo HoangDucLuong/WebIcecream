@@ -31,4 +31,8 @@
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WebIcecream\WebIcecream.csproj" />
+  </ItemGroup>
+
 </Project>

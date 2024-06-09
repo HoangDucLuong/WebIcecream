@@ -8,22 +8,22 @@ namespace WebIcecream.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class EmailController : Controller
+    public class EmailController : ControllerBase
     {
         private readonly IServiceMail _mailService;
         private readonly ILogger<EmailController> _logger;
 
         public EmailController(IServiceMail mailService, ILogger<EmailController> logger)
         {
-            _mailService = mailService;
-            _logger = logger;
+            _mailService = mailService ?? throw new ArgumentNullException(nameof(mailService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+
         [HttpGet]
-        [Route("~/")]
         public IActionResult Contact()
         {
-            return Ok();
+            return Ok("Contact page");
         }
 
         [HttpPost]
@@ -32,16 +32,13 @@ namespace WebIcecream.Controllers
             try
             {
                 await _mailService.SendEmailAsync(name, email, phone, message);
-                TempData["SuccessMessage"] = "Email sent successfully!";
-                return RedirectToAction("Contact");
+                return Ok(new { SuccessMessage = "Email sent successfully!" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending email.");
-                TempData["ErrorMessage"] = "There was an error sending your email. Please try again later.";
-                return RedirectToAction("Contact");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { ErrorMessage = "There was an error sending your email. Please try again later." });
             }
-            
         }
     }
 }
