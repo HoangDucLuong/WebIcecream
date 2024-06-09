@@ -36,7 +36,7 @@
                             <img class="rounded-circle w-100 h-100" src="@item.ImageUrl" alt="@item.Title" style="object-fit: cover;">
                         </div>
                         <h5 class="font-weight-bold mb-4">@item.Title</h5>
-                        <a href="#" class="btn btn-sm btn-secondary">Order Now</a>
+                        <a href="https://localhost:7003/Order/Create" class="btn btn-sm btn-secondary" onclick="openOrderModal('@item.Title', '@item.Price', '@item.BookId')">Order Now</a>
                     </div>
                 </div>
             }
@@ -48,3 +48,45 @@
     </div>
 </div>
 <!-- Products End -->
+@* <!-- Order Modal -->
+<div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderModalLabel">Order Now</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="orderForm" method="post" action="/Order/Create">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="Username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="phoneNumber" name="PhoneNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="Address" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Product</label>
+                        <input type="text" class="form-control" id="title" name="Title" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="text" class="form-control" id="price" name="Price" readonly>
+                    </div>
+                    <input type="hidden" id="productId" name="ProductId">
+                    <button type="submit" class="btn btn-primary">Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> *@
+
