@@ -1,6 +1,7 @@
 ﻿using WebIcecream.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebIcecream.Data.Repositories
 {

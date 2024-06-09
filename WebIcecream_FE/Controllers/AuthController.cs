@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using WebIcecream_FE.Models;
-
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace WebIcecream_FE.Controllers
 {
@@ -31,31 +31,30 @@ namespace WebIcecream_FE.Controllers
             {
                 return View(model);
             }
-            
+
             var client = _httpClientFactory.CreateClient();
             var json = JsonConvert.SerializeObject(model);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("https://localhost:7018/api/Auth/Login/login", content);
+            var response = await client.PostAsync("https://localhost:7018/api/Auth/Login", content);
 
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
                 var token = JsonConvert.DeserializeObject<TokenResponse>(data);
 
-                // Lưu token vào session hoặc cookie
+                // Save token to session
                 HttpContext.Session.SetString("Token", token.Token);
                 HttpContext.Session.SetString("Username", model.Username);
 
-                // Kiểm tra vai trò của người dùng
+                // Check user's role
                 var userRoleId = GetUserRoleIdFromToken();
 
-                // Kiểm tra xem vai trò có phù hợp không
                 if (userRoleId == 1)
                 {
-                    // Cập nhật trạng thái đăng nhập sau khi đăng nhập thành công
+                    // Update login status after successful login
                     ViewData["IsLoggedIn"] = true;
 
-                    return RedirectToAction("Index", "Home"); // Chuyển hướng đến trang chính sau khi đăng nhập thành công
+                    return RedirectToAction("Index", "Home"); // Redirect to home page after successful login
                 }
                 else
                 {
@@ -65,10 +64,10 @@ namespace WebIcecream_FE.Controllers
             }
             else
             {
-                ModelState.AddModelError("Password", "Invalid password.");
+                string errorResponse = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError("", $"Login failed: {errorResponse}");
                 return View(model);
             }
-  
         }
 
         [HttpGet]
@@ -87,16 +86,14 @@ namespace WebIcecream_FE.Controllers
             }
             else
             {
-                // Xử lý khi không lấy được danh sách Membership
                 TempData["ErrorMessage"] = "Failed to retrieve Membership packages.";
                 return View();
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            var selectedPackageId = model.PackageId; // Debug here to see the value
-
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -105,15 +102,18 @@ namespace WebIcecream_FE.Controllers
             var client = _httpClientFactory.CreateClient();
             var json = JsonConvert.SerializeObject(model);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("https://localhost:7018/api/Auth/Register/register", content);
+            var response = await client.PostAsync("https://localhost:7018/api/Auth/Register", content);
 
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToAction("Login", "Auth");
             }
-
-            ModelState.AddModelError("", "Registration failed");
-            return View(model);
+            else
+            {
+                string errorResponse = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError("", $"Registration failed: {errorResponse}");
+                return View(model);
+            }
         }
 
         [HttpPost]
@@ -123,10 +123,11 @@ namespace WebIcecream_FE.Controllers
             HttpContext.Session.Remove("Username");
 
             var client = _httpClientFactory.CreateClient();
-            var response = await client.PostAsync("https://localhost:7018/api/Auth/Logout/logout", null);
+            var response = await client.PostAsync("https://localhost:7018/api/Auth/Logout", null);
 
             return RedirectToAction("Index", "Home");
         }
+
         private int? GetUserRoleIdFromToken()
         {
             var token = HttpContext.Session.GetString("Token");
@@ -136,7 +137,7 @@ namespace WebIcecream_FE.Controllers
                 var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
                 var jwtToken = handler.ReadJwtToken(token);
 
-                var roleIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "role");
+                var roleIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
 
                 if (roleIdClaim != null && int.TryParse(roleIdClaim.Value, out int roleId))
                 {

@@ -44,6 +44,8 @@
                             <th>@Html.DisplayNameFor(model => model.RegistrationDate)</th>
                             <th>@Html.DisplayNameFor(model => model.IsActive)</th>
                             <th>@Html.DisplayNameFor(model => model.PackageName)</th>
+                            <th>@Html.DisplayNameFor(model => model.PackageStartDate)</th>
+                            <th>@Html.DisplayNameFor(model => model.PackageEndDate)</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -62,6 +64,8 @@
                                 <td>@Html.DisplayFor(modelItem => item.RegistrationDate)</td>
                                 <td>@Html.DisplayFor(modelItem => item.IsActive)</td>
                                 <td>@Html.DisplayFor(modelItem => item.PackageName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.PackageStartDate)</td>
+                                <td>@Html.DisplayFor(modelItem => item.PackageEndDate)</td>
                                 <td>                                    
                                     <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.UserId"><i class="fa fa-trash"></i> Delete</a>
                                 </td>

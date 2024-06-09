@@ -1,4 +1,5 @@
 ﻿using WebIcecream.DTOs;
+using WebIcecream.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

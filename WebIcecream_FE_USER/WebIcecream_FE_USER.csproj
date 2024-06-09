@@ -1,0 +1,501 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\ckeditor.d.ts" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\ckeditor.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\ckeditor.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\index.html" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\LICENSE.md" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\README.md" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\sample\css\sample.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\sample\img\bg.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\sample\img\github.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\sample\img\logo.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\sample\img\umbrellas.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\af.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ar.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ast.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\az.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\bg.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\bn.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\bs.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ca.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\cs.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\da.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\de-ch.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\de.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\el.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\en-au.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\en-gb.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\eo.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\es-co.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\es.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\et.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\eu.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\fa.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\fi.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\fr.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\gl.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\gu.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\he.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\hi.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\hr.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\hu.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\hy.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\id.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\it.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ja.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\jv.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\km.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\kn.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ko.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ku.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\lt.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\lv.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ms.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\nb.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ne.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\nl.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\no.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\oc.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\pl.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\pt-br.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\pt.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ro.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ru.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\si.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\sk.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\sl.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\sq.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\sr-latn.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\sr.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\sv.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\th.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ti.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\tk.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\tr.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\tt.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ug.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\uk.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\ur.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\uz.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\vi.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\zh-cn.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\ckeditor5-build-classic\translations\zh.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\site.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\download.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\EASY-FRUIT-NUT-ICE-CREAM.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\hsfvyq4e.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\OIP.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\t3u2ywn7.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\css\style.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\css\style.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\about.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\carousel-1.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\carousel-2.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\header.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\portfolio-1.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\portfolio-2.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\portfolio-3.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\portfolio-4.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\portfolio-5.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\portfolio-6.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\product-1.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\product-2.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\product-3.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\product-4.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\product-5.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\promotion.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\service-1.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\service-2.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\service-3.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\service-4.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\team-1.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\team-2.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\team-3.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\team-4.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\testimonial-1.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\testimonial-2.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\img\testimonial-3.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\js\main.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\counterup\counterup.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\easing\easing.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\easing\easing.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\isotope\isotope.pkgd.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\isotope\isotope.pkgd.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\lightbox\css\lightbox.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\lightbox\css\lightbox.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\lightbox\images\close.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\lightbox\images\loading.gif" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\lightbox\images\next.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\lightbox\images\prev.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\lightbox\js\lightbox.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\lightbox\js\lightbox.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\lightbox\links.php" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\assets\ajax-loader.gif" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\assets\owl.carousel.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\assets\owl.carousel.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\assets\owl.theme.default.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\assets\owl.theme.default.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\assets\owl.theme.green.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\assets\owl.theme.green.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\assets\owl.video.play.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\LICENSE" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\owl.carousel.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\owlcarousel\owl.carousel.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\waypoints\links.php" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\lib\waypoints\waypoints.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\mail\contact.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\mail\contact.php" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\mail\jqBootstrapValidation.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\bootstrap-grid.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\bootstrap-reboot.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\bootstrap.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_alert.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_background-variant.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_badge.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_border-radius.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_box-shadow.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_breakpoints.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_buttons.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_caret.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_clearfix.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_deprecate.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_float.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_forms.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_gradients.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_grid-framework.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_grid.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_hover.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_image.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_list-group.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_lists.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_nav-divider.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_pagination.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_reset-text.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_resize.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_screen-reader.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_size.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_table-row.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_text-emphasis.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_text-hide.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_text-truncate.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_transition.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\mixins\_visibility.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_align.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_background.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_borders.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_clearfix.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_display.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_embed.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_flex.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_float.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_interactions.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_overflow.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_position.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_screenreaders.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_shadows.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_sizing.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_spacing.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_stretched-link.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_text.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\utilities\_visibility.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\vendor\_rfs.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_alert.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_badge.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_breadcrumb.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_button-group.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_buttons.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_card.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_carousel.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_close.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_code.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_custom-forms.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_dropdown.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_forms.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_functions.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_grid.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_images.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_input-group.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_jumbotron.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_list-group.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_media.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_mixins.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_modal.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_nav.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_navbar.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_pagination.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_popover.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_print.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_progress.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_reboot.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_root.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_spinners.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_tables.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_toasts.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_tooltip.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_transitions.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_type.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_utilities.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\bootstrap\scss\_variables.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\temp\scss\style.scss" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
+    <PackageReference Include="MailKit" Version="4.6.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="9.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\favicon.ico">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\js\site.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.min.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.js.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\bootstrap\LICENSE">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery-validation\dist\additional-methods.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery-validation\dist\additional-methods.min.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery-validation\dist\jquery.validate.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery-validation\dist\jquery.validate.min.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery-validation\LICENSE.md">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery\dist\jquery.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery\dist\jquery.min.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery\dist\jquery.min.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\jquery\LICENSE.txt">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

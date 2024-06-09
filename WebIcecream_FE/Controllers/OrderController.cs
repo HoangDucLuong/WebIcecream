@@ -1,19 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-<<<<<<< HEAD
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using WebIcecream_FE.ViewModels;
-=======
->>>>>>> 9db8cf9597da4b99c8317aab2061f9006263561c
 
 namespace WebIcecream_FE.Controllers
 {
     public class OrderController : Controller
     {
-<<<<<<< HEAD
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -41,10 +37,6 @@ namespace WebIcecream_FE.Controllers
             }
 
             return null;
-=======
-
-        {
->>>>>>> 9db8cf9597da4b99c8317aab2061f9006263561c
         }
 
         // GET: Order
@@ -101,7 +93,6 @@ namespace WebIcecream_FE.Controllers
 
         // POST: Order/Create
         [HttpPost]
-<<<<<<< HEAD
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrderViewModel order)
         {
@@ -128,15 +119,8 @@ namespace WebIcecream_FE.Controllers
                 {
                     ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
                 }
-=======
-        {
-            if (ModelState.IsValid)
-            {
-
->>>>>>> 9db8cf9597da4b99c8317aab2061f9006263561c
             }
 
-            // Nếu dữ liệu không hợp lệ, hiển thị lại form
             return View(order);
         }
 

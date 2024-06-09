@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Create Order";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Extracting query string parameters
+    var queryString = Context.Request.QueryString;
+    var parsedQuery = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(queryString.Value);
+    var bookId = parsedQuery.TryGetValue("bookId", out var bookIdValue) ? bookIdValue.ToString() : "";
+    var price = parsedQuery.TryGetValue("price", out var priceValue) ? priceValue.ToString() : "";
+}
+
+<h2>Create Order</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" name="Username" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="Email" required>
+    </div>
+    <div class="mb-3">
+        <label for="phoneNumber" class="form-label">Phone Number</label>
+        <input type="text" class="form-control" id="phoneNumber" name="PhoneNumber" required>
+    </div>
+    <div class="mb-3">
+        <label for="shippingAddress" class="form-label">Shipping Address</label>
+        <input type="text" class="form-control" id="shippingAddress" name="ShippingAddress" required>
+    </div>
+    <div class="mb-3">
+        <label for="bookId" class="form-label">Product ID</label>
+        <input type="text" class="form-control" id="bookId" name="BookID" readonly value="@bookId">
+    <div class="mb-3">
+        <label for="cost" class="form-label">Price</label>
+        <input type="text" class="form-control" id="cost" name="Cost" readonly value="@price">
+    </div>
+    <button type="submit" class="btn btn-primary">Order</button>
+</form>

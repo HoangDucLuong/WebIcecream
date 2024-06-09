@@ -1,0 +1,97 @@
+﻿@using System.Text.Encodings.Web
+
+@model List<RecipeViewModel>
+@{
+    ViewData["Title"] = "Recipes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Header Start -->
+<div class="jumbotron jumbotron-fluid page-header" style="margin-bottom: 90px;">
+    <div class="container text-center py-5">
+        <h1 class="text-white display-3 mt-lg-5">Recipes</h1>
+        <div class="d-inline-flex align-items-center text-white">
+            <p class="m-0"><a class="text-white" href="/Home/Index">Home</a></p>
+            <i class="fa fa-circle px-3"></i>
+            <p class="m-0">Recipes</p>
+        </div>
+    </div>
+</div>
+<!-- Header End -->
+<!-- Recipes Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <h1 class="section-title position-relative text-center mb-5">Delicious Recipes for Ice Cream Lovers</h1>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var recipe in Model)
+            {
+                <div class="col-lg-4 col-md-6 mb-4 pb-2">
+                    <div class="recipe-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
+                        <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
+                            <img class="rounded-circle w-100 h-100" src="@recipe.ImageUrl" alt="@recipe.Flavor" style="object-fit: cover;">
+                        </div>
+                        <h5 class="font-weight-bold mb-4">@recipe.Flavor</h5>
+                        <p class="mb-4">@recipe.Ingredients</p>
+                        <a href="#" class="btn btn-sm btn-secondary" onclick="openRecipeModal('@recipe.Flavor', '@Html.Raw(JavaScriptEncoder.Default.Encode(recipe.Procedure))', '@recipe.ImageUrl')">View Recipe</a>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-6 text-center">
+            <a href="#" class="btn btn-primary py-3 px-5">Load More</a>
+            <a href="https://localhost:7003/NewRecipe/Index" class="btn btn-primary py-3 px-5">Check Products</a>
+        </div>
+    </div>
+</div>
+<!-- Recipes End -->
+<!-- Recipe Modal -->
+<div class="modal fade" id="recipeModal" tabindex="-1" aria-labelledby="recipeModalLabel" aria-hidden="true">
+    <div class="modal-dialog custom-modal-dialog">
+        <div class="modal-content custom-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="recipeModalLabel">View Recipe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body recipe-procedure-content">
+                <h5 id="recipeFlavor" class="font-weight-bold mb-4"></h5>
+                <div id="recipeProcedure" style="white-space: pre-wrap;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openRecipeModal(flavor, procedure, imageUrl) {
+        $('#recipeFlavor').text(flavor);
+        $('#recipeProcedure').html(procedure); // Directly setting the HTML content
+        $('#recipeModal').modal('show');
+    }
+</script>
+
+<style>
+    .recipe-procedure-content img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .custom-modal {
+        border: 2px solid #333; /* Darker border */
+        border-radius: 15px; /* Rounded corners */
+    }
+
+    .custom-modal-dialog {
+        max-width: 80%; /* Make the modal wider */
+        max-height: 90vh; /* Make the modal taller */
+    }
+
+    .custom-modal .modal-body {
+        overflow-y: auto;
+    }
+</style>
