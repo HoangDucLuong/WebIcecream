@@ -38,7 +38,6 @@ namespace WebIcecream.Controllers
         public ActionResult<OrderDTO> CreateOrder([FromBody] OrderDTO orderDto)
         {
             orderDto.OrderId = _orders.Any() ? _orders.Max(o => o.OrderId) + 1 : 1;
-            orderDto.OrderStatus = "Pending"; // Default status, could be "Received", "Processing", "Shipped", etc.
             _orders.Add(orderDto);
             return CreatedAtAction(nameof(GetOrderById), new { id = orderDto.OrderId }, orderDto);
         }
