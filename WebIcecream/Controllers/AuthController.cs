@@ -56,6 +56,14 @@ namespace WebIcecream.Controllers
             // Hash password using bcrypt
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
 
+            // Retrieve membership package information (assuming you have it available)
+            var package = await _context.MembershipPackages.FirstOrDefaultAsync(p => p.PackageId == registerDTO.PackageId);
+
+            if (package == null)
+            {
+                return BadRequest("Invalid PackageId"); // Handle case where package is not found
+            }
+
             // Create new user profile
             var newUser = new User
             {
@@ -70,7 +78,7 @@ namespace WebIcecream.Controllers
                 IsActive = true, // Assuming user is active upon registration
                 PackageId = registerDTO.PackageId,
                 PackageStartDate = DateTime.Now,
-                PackageEndDate = DateTime.Now.AddDays(30)
+                PackageEndDate = DateTime.Now.AddDays(package.DurationDays) // Set end date based on package duration
             };
 
             _context.Users.Add(newUser);
@@ -90,7 +98,6 @@ namespace WebIcecream.Controllers
 
             return StatusCode(201); // Created
         }
-
 
         [HttpPost("logout")]
         public IActionResult Logout()

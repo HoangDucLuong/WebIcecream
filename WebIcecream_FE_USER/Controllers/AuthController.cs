@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using WebIcecream_FE_USER.Models;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using System.Linq;
 
 namespace WebIcecream_FE_USER.Controllers
 {
@@ -46,10 +48,11 @@ namespace WebIcecream_FE_USER.Controllers
                 HttpContext.Session.SetString("Token", token.Token);
                 HttpContext.Session.SetString("Username", model.Username);
 
-                // Check user's role
+                // Check user's role and isActive status
                 var userRoleId = GetUserRoleIdFromToken();
+                var isActive = await IsUserActive(model.Username); // Assuming a method to check IsActive status
 
-                if (userRoleId == 1)
+                if (userRoleId == 1 && isActive)
                 {
                     // Update login status after successful login
                     ViewData["IsLoggedIn"] = true;
@@ -58,7 +61,11 @@ namespace WebIcecream_FE_USER.Controllers
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Access denied. You do not have permission to access this page.";
+                    // Invalidate current session and redirect to login
+                    HttpContext.Session.Remove("Token");
+                    HttpContext.Session.Remove("Username");
+
+                    TempData["ErrorMessage"] = "Your account is inactive or you do not have permission to access.";
                     return RedirectToAction("Login");
                 }
             }
@@ -146,6 +153,24 @@ namespace WebIcecream_FE_USER.Controllers
             }
 
             return null;
+        }
+
+        private async Task<bool> IsUserActive(string username)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.GetAsync($"https://localhost:7018/api/User/IsActive/{username}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                bool isActive = JsonConvert.DeserializeObject<bool>(data);
+                return isActive;
+            }
+            else
+            {
+                // Handle error if needed
+                return false;
+            }
         }
     }
 }

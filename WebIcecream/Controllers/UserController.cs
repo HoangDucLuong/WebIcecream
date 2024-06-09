@@ -33,7 +33,7 @@ namespace WebIcecream.Controllers
                     Address = m.Address,
                     PaymentStatus = m.PaymentStatus,
                     RegistrationDate = m.RegistrationDate,
-                    IsActive = m.IsActive,
+                    IsActive = m.PackageEndDate >= DateTime.Now, // Update IsActive based on PackageEndDate
                     PackageId = m.PackageId,
                     PackageName = m.Package != null ? m.Package.PackageName : null,  // Include PackageName
                     PackageStartDate = m.PackageStartDate,
@@ -60,7 +60,7 @@ namespace WebIcecream.Controllers
                     Address = m.Address,
                     PaymentStatus = m.PaymentStatus,
                     RegistrationDate = m.RegistrationDate,
-                    IsActive = m.IsActive,
+                    IsActive = m.PackageEndDate >= DateTime.Now, // Update IsActive based on PackageEndDate
                     PackageId = m.PackageId,
                     PackageName = m.Package != null ? m.Package.PackageName : null,  // Include PackageName
                     PackageStartDate = m.PackageStartDate,
@@ -76,7 +76,6 @@ namespace WebIcecream.Controllers
             return Ok(user);
         }
 
-
         [HttpPost]
         public async Task<ActionResult<UserDTO>> PostUser(UserDTO userDto)
         {
@@ -90,7 +89,7 @@ namespace WebIcecream.Controllers
                 Address = userDto.Address,
                 PaymentStatus = userDto.PaymentStatus,
                 RegistrationDate = userDto.RegistrationDate,
-                IsActive = userDto.IsActive,
+                IsActive = userDto.PackageEndDate >= DateTime.Now, // Set IsActive based on PackageEndDate
                 PackageId = userDto.PackageId,
                 PackageStartDate = userDto.PackageStartDate,
                 PackageEndDate = userDto.PackageEndDate
@@ -100,6 +99,7 @@ namespace WebIcecream.Controllers
             await _context.SaveChangesAsync();
 
             userDto.UserId = user.UserId;
+            userDto.IsActive = user.IsActive; // Update IsActive in userDto
             userDto.PackageName = user.Package != null ? user.Package.PackageName : null;
             userDto.PackageStartDate = user.PackageStartDate;
             userDto.PackageEndDate = user.PackageEndDate;
@@ -121,6 +121,7 @@ namespace WebIcecream.Controllers
                 return NotFound();
             }
 
+            // Update user properties
             user.FullName = userDto.FullName;
             user.Email = userDto.Email;
             user.PhoneNumber = userDto.PhoneNumber;
@@ -129,11 +130,12 @@ namespace WebIcecream.Controllers
             user.Address = userDto.Address;
             user.PaymentStatus = userDto.PaymentStatus;
             user.RegistrationDate = userDto.RegistrationDate;
-            user.IsActive = userDto.IsActive;
+            user.IsActive = userDto.PackageEndDate >= DateTime.Now; // Set IsActive based on PackageEndDate
             user.PackageId = userDto.PackageId;
             user.PackageStartDate = userDto.PackageStartDate;
             user.PackageEndDate = userDto.PackageEndDate;
 
+            // Save changes to the database
             _context.Entry(user).State = EntityState.Modified;
             try
             {
@@ -171,6 +173,22 @@ namespace WebIcecream.Controllers
 
             return NoContent();
         }
+        [HttpGet("{username}")]
+        public async Task<ActionResult<bool>> IsActive(string username)
+        {
+            var user = await _context.UserAccounts
+                .Include(ua => ua.User)
+                .FirstOrDefaultAsync(u => u.Username == username);
+
+            if (user == null || user.User == null)
+            {
+                return NotFound();
+            }
+
+            bool isActive = user.User.PackageEndDate >= DateTime.Now;
+            return Ok(isActive);
+        }
+
 
         private bool UserExists(int id)
         {

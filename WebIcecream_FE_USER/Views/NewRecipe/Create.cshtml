@@ -5,56 +5,58 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1 class="text-center">Create</h1>
 
-<h4>NewRecipeViewModel</h4>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group" hidden>
-                <label asp-for="UserId" class="control-label"></label>
-                <input asp-for="UserId" class="form-control" />
-                <span asp-validation-for="UserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Flavor" class="control-label"></label>
-                <input asp-for="Flavor" class="form-control" />
-                <span asp-validation-for="Flavor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Ingredients" class="control-label"></label>
-                <input asp-for="Ingredients" class="form-control" />
-                <span asp-validation-for="Ingredients" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Procedure" class="control-label"></label>
-                <textarea asp-for="Procedure" class="form-control" id="myeditor"></textarea>
-                <span asp-validation-for="Procedure" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
-            <div class="form-group" hidden>
-                <label asp-for="SubmissionDate" class="control-label"></label>
-                <input asp-for="SubmissionDate" class="form-control" />
-                <span asp-validation-for="SubmissionDate" class="text-danger"></span>
-            </div>
-            <div class="form-group" hidden>
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="col-md-4 mx-auto">
+        <div class="text-center">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group" hidden>
+                    <label asp-for="UserId" class="control-label"></label>
+                    <input asp-for="UserId" class="form-control" />
+                    <span asp-validation-for="UserId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Flavor" class="control-label"></label>
+                    <input asp-for="Flavor" class="form-control" />
+                    <span asp-validation-for="Flavor" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Ingredients" class="control-label"></label>
+                    <input asp-for="Ingredients" class="form-control" />
+                    <span asp-validation-for="Ingredients" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Procedure" class="control-label"></label>
+                    <textarea asp-for="Procedure" class="form-control" id="myeditor"></textarea>
+                    <span asp-validation-for="Procedure" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Image" class="control-label"></label>
+                    <input asp-for="Image" class="form-control" />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+                <div class="form-group" hidden>
+                    <label asp-for="SubmissionDate" class="control-label"></label>
+                    <input asp-for="SubmissionDate" class="form-control" />
+                    <span asp-validation-for="SubmissionDate" class="text-danger"></span>
+                </div>
+                <div class="form-group" hidden>
+                    <label asp-for="Status" class="control-label"></label>
+                    <input asp-for="Status" class="form-control" />
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
+<div class="text-center">
     <a asp-action="Index">Back to List</a>
 </div>

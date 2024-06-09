@@ -25,11 +25,39 @@ namespace WebIcecream_FE_USER.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            List<RecipeViewModel> recipes = await GetRecipes();
+            return View(recipes);
         }
 
+        private async Task<List<RecipeViewModel>> GetRecipes()
+        {
+            List<RecipeViewModel> recipes = new List<RecipeViewModel>();
+
+            try
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync("/recipes/getallrecipes");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    recipes = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RecipeViewModel>>(data);
+                }
+                else
+                {
+                    _logger.LogError($"Failed to retrieve recipes: {response.StatusCode}");
+                    // Handle error accordingly
+                }
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving recipes");
+                // Handle exception accordingly
+            }
+
+            return recipes;
+        }
         public IActionResult Contact()
         {
             return View();
