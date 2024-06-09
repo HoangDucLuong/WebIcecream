@@ -59,7 +59,7 @@
                                 <td>@Html.DisplayFor(modelItem => item.RecipeId)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Flavor)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Ingredients)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Procedure)</td>
+                                <td>@Html.Raw(item.Procedure)</td>
                                 <td>
                                     @if (!string.IsNullOrEmpty(item.ImageUrl) && !item.ImageUrl.StartsWith("http"))
                                     {

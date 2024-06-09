@@ -6,11 +6,9 @@ namespace WebIcecream.DTOs
     {
         public int OrderId { get; set; }
         public int UserId { get; set; }
-        public string Username { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string PhoneNumber { get; set; } = null!;
-        public string ShippingAddress { get; set; } = null!;
+
         public int BookId { get; set; }
+<<<<<<< HEAD
         public decimal Cost { get; set; }
         public decimal Price { get; set; }
 
@@ -27,5 +25,15 @@ namespace WebIcecream.DTOs
         public OrderDTO()
         {
         }
+=======
+
+        public string Address { get; set; }
+
+        public decimal Cost { get; set; }
+
+        public string PaymentOption { get; set; }
+
+        public string OrderStatus { get; set; }
+>>>>>>> 9db8cf9597da4b99c8317aab2061f9006263561c
     }
 }
