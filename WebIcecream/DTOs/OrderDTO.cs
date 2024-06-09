@@ -11,7 +11,21 @@ namespace WebIcecream.DTOs
         public string PhoneNumber { get; set; } = null!;
         public string ShippingAddress { get; set; } = null!;
         public int BookId { get; set; }
-        public string Address { get; set; } = null!;
         public decimal Cost { get; set; }
+        public decimal Price { get; set; }
+
+        public OrderDTO(BookDTO book)
+        {
+            if (book != null)
+            {
+                BookId = book.BookId;         
+                Price = book.Price;
+                Cost = book.Price; 
+            }
+        }
+        
+        public OrderDTO()
+        {
+        }
     }
 }

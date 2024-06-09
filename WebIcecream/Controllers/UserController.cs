@@ -34,7 +34,9 @@ namespace WebIcecream.Controllers
                     RegistrationDate = m.RegistrationDate,
                     IsActive = m.IsActive,
                     PackageId = m.PackageId,
-                    PackageName = m.Package != null ? m.Package.PackageName : null  // Include PackageName
+                    PackageName = m.Package != null ? m.Package.PackageName : null,  // Include PackageName
+                    PackageStartDate = m.PackageStartDate,
+                    PackageEndDate = m.PackageEndDate
                 })
                 .ToListAsync();
 
@@ -59,7 +61,9 @@ namespace WebIcecream.Controllers
                     RegistrationDate = m.RegistrationDate,
                     IsActive = m.IsActive,
                     PackageId = m.PackageId,
-                    PackageName = m.Package != null ? m.Package.PackageName : null  // Include PackageName
+                    PackageName = m.Package != null ? m.Package.PackageName : null,  // Include PackageName
+                    PackageStartDate = m.PackageStartDate,
+                    PackageEndDate = m.PackageEndDate
                 })
                 .FirstOrDefaultAsync();
 
@@ -70,6 +74,7 @@ namespace WebIcecream.Controllers
 
             return Ok(user);
         }
+
 
         [HttpPost]
         public async Task<ActionResult<UserDTO>> PostUser(UserDTO userDto)
@@ -85,7 +90,9 @@ namespace WebIcecream.Controllers
                 PaymentStatus = userDto.PaymentStatus,
                 RegistrationDate = userDto.RegistrationDate,
                 IsActive = userDto.IsActive,
-                PackageId = userDto.PackageId
+                PackageId = userDto.PackageId,
+                PackageStartDate = userDto.PackageStartDate,
+                PackageEndDate = userDto.PackageEndDate
             };
 
             _context.Users.Add(user);
@@ -93,6 +100,8 @@ namespace WebIcecream.Controllers
 
             userDto.UserId = user.UserId;
             userDto.PackageName = user.Package != null ? user.Package.PackageName : null;
+            userDto.PackageStartDate = user.PackageStartDate;
+            userDto.PackageEndDate = user.PackageEndDate;
 
             return CreatedAtAction(nameof(GetUser), new { id = userDto.UserId }, userDto);
         }
@@ -121,6 +130,8 @@ namespace WebIcecream.Controllers
             user.RegistrationDate = userDto.RegistrationDate;
             user.IsActive = userDto.IsActive;
             user.PackageId = userDto.PackageId;
+            user.PackageStartDate = userDto.PackageStartDate;
+            user.PackageEndDate = userDto.PackageEndDate;
 
             _context.Entry(user).State = EntityState.Modified;
             try
@@ -141,6 +152,7 @@ namespace WebIcecream.Controllers
 
             return NoContent();
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)

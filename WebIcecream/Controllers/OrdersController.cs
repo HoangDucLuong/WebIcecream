@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using WebIcecream.DTOs;
@@ -11,7 +10,7 @@ namespace WebIcecream.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private static List<OrderDTO> _orders = new List<OrderDTO>(); // In-memory store for orders
+        private static List<OrderDTO> _orders = new List<OrderDTO>(); 
 
         // GET: api/orders
         [HttpGet]
@@ -37,8 +36,12 @@ namespace WebIcecream.Controllers
         [HttpPost]
         public ActionResult<OrderDTO> CreateOrder([FromBody] OrderDTO orderDto)
         {
+            // In a real scenario, you would typically validate the orderDto before proceeding.
+            // Here, we assume the input is valid for simplicity.
+
             orderDto.OrderId = _orders.Any() ? _orders.Max(o => o.OrderId) + 1 : 1;
             _orders.Add(orderDto);
+
             return CreatedAtAction(nameof(GetOrderById), new { id = orderDto.OrderId }, orderDto);
         }
 
@@ -46,14 +49,23 @@ namespace WebIcecream.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateOrder(int id, [FromBody] OrderDTO orderDto)
         {
-            var index = _orders.FindIndex(o => o.OrderId == id);
-            if (index < 0)
+            var existingOrder = _orders.FirstOrDefault(o => o.OrderId == id);
+            if (existingOrder == null)
             {
                 return NotFound();
             }
 
-            orderDto.OrderId = id; // Ensure the ID is correct
-            _orders[index] = orderDto;
+            // Update the fields of existingOrder with data from orderDto
+            existingOrder.UserId = orderDto.UserId;
+            existingOrder.Username = orderDto.Username;
+            existingOrder.Email = orderDto.Email;
+            existingOrder.PhoneNumber = orderDto.PhoneNumber;
+            existingOrder.ShippingAddress = orderDto.ShippingAddress;
+            existingOrder.BookId = orderDto.BookId;
+            existingOrder.Cost = orderDto.Cost;
+            
+            existingOrder.Price = orderDto.Price;
+
             return NoContent();
         }
 
@@ -61,13 +73,13 @@ namespace WebIcecream.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteOrder(int id)
         {
-            var index = _orders.FindIndex(o => o.OrderId == id);
-            if (index < 0)
+            var existingOrder = _orders.FirstOrDefault(o => o.OrderId == id);
+            if (existingOrder == null)
             {
                 return NotFound();
             }
 
-            _orders.RemoveAt(index);
+            _orders.Remove(existingOrder);
             return NoContent();
         }
     }

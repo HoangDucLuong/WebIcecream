@@ -19,8 +19,6 @@ public partial class Order
 
     public int BookId { get; set; }
 
-    public string Address { get; set; } = null!;
-
     public decimal Cost { get; set; }
 
     public virtual Book Book { get; set; } = null!;
