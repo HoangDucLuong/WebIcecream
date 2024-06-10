@@ -35,13 +35,15 @@ public partial class ProjectDak3Context : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-RQ8HM1R;Initial Catalog=ProjectDAK3;Persist Security Info=True;User ID=sa;Password=123;Encrypt=True;Trust Server Certificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=KDYO;Initial Catalog=ProjectDAK3;Persist Security Info=True;User ID=sa;Password=123;Encrypt=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
+
         modelBuilder.Entity<Book>(entity =>
         {
-            entity.HasKey(e => e.BookId).HasName("PK__Books__3DE0C2279DD6F4C4");
+            entity.HasKey(e => e.BookId).HasName("PK__Books__3DE0C2273E48D8AC");
 
             entity.Property(e => e.BookId).HasColumnName("BookID");
             entity.Property(e => e.Description).HasColumnType("text");
@@ -57,7 +59,7 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<Feedback>(entity =>
         {
-            entity.HasKey(e => e.FeedbackId).HasName("PK__Feedback__6A4BEDF660D62395");
+            entity.HasKey(e => e.FeedbackId).HasName("PK__Feedback__6A4BEDF6A0955D03");
 
             entity.ToTable("Feedback");
 
@@ -74,7 +76,7 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<MembershipPackage>(entity =>
         {
-            entity.HasKey(e => e.PackageId).HasName("PK__Membersh__322035ECA1B4529B");
+            entity.HasKey(e => e.PackageId).HasName("PK__Membersh__322035EC60846826");
 
             entity.Property(e => e.PackageId).HasColumnName("PackageID");
             entity.Property(e => e.PackageName).HasMaxLength(50);
@@ -83,7 +85,7 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<NewRecipe>(entity =>
         {
-            entity.HasKey(e => e.RecipeId).HasName("PK__NewRecip__FDD988D05F875E70");
+            entity.HasKey(e => e.RecipeId).HasName("PK__NewRecip__FDD988D087EE3FDD");
 
             entity.Property(e => e.RecipeId).HasColumnName("RecipeID");
             entity.Property(e => e.Flavor)
@@ -106,12 +108,12 @@ public partial class ProjectDak3Context : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.NewRecipes)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__NewRecipe__UserI__571DF1D5");
+                .HasConstraintName("FK__NewRecipe__UserI__4CA06362");
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAFD3DD5FDB");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAFE4F8D5E9");
 
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
             entity.Property(e => e.BookId).HasColumnName("BookID");
@@ -141,7 +143,7 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<Recipe>(entity =>
         {
-            entity.HasKey(e => e.RecipeId).HasName("PK__Recipes__FDD988D0CA486D8D");
+            entity.HasKey(e => e.RecipeId).HasName("PK__Recipes__FDD988D05126FF2D");
 
             entity.Property(e => e.RecipeId).HasColumnName("RecipeID");
             entity.Property(e => e.Flavor)
@@ -157,7 +159,7 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE3AC823BE4E");
+            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE3A5020FF88");
 
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
             entity.Property(e => e.RoleName).HasMaxLength(50);
@@ -165,9 +167,9 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACBA2BE4C6");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACB3760BF9");
 
-            entity.HasIndex(e => e.Email, "UQ__Users__A9D10534222B6393").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D105341A17F8BE").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.Address).HasMaxLength(500);
@@ -197,7 +199,7 @@ public partial class ProjectDak3Context : DbContext
 
         modelBuilder.Entity<UserAccount>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__UserAcco__1788CCACB365937F");
+            entity.HasKey(e => e.UserId).HasName("PK__UserAcco__1788CCACD7C8D396");
 
             entity.HasIndex(e => e.Username, "UC_Username").IsUnique();
 

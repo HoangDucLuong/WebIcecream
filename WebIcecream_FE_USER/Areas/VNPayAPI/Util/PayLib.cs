@@ -32,7 +32,6 @@ namespace WebIcecream_FE_USER.Areas.VNPayAPI.Util
             String signData = queryString;
             if (signData.Length > 0)
             {
-
                 signData = signData.Remove(data.Length - 1, 1);
             }
             string vnp_SecureHash = HmacSHA512(vnp_HashSecret, signData);
@@ -54,9 +53,9 @@ namespace WebIcecream_FE_USER.Areas.VNPayAPI.Util
                     hash.Append(theByte.ToString("x2"));
                 }
             }
-
             return hash.ToString();
         }
+
     }
     public class VnPayCompare : IComparer<string>
     {
