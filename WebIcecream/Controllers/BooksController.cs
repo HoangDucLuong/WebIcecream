@@ -145,6 +145,35 @@ namespace WebIcecream.Controllers
                 return Ok();
             }
         }
+        // GET: api/Books/SearchBooksByName?name={name}
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<BookDTO>>> SearchBooksByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Name parameter is required.");
+            }
+
+            var books = await _context.Books
+                .Where(b => b.Title.Contains(name))
+                .Select(b => new BookDTO
+                {
+                    BookId = b.BookId,
+                    Title = b.Title,
+                    Description = b.Description,
+                    ImageUrl = b.ImageUrl,
+                    Price = b.Price
+                })
+                .ToListAsync();
+
+            if (books == null || books.Count == 0)
+            {
+                return NotFound("No books found with the provided name.");
+            }
+
+            return Ok(books);
+        }
+
 
         // DELETE: api/Books/5
         [HttpDelete("{id}")]

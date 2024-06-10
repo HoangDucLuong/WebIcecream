@@ -71,7 +71,36 @@ namespace WebIcecream.Controllers
 
             return Ok(recipe);
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<NewRecipeDTO>>> SearchNewRecipeByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Name parameter is required.");
+            }
 
+            var newrecipes = await _context.NewRecipes
+                .Where(b => b.Flavor.Contains(name))
+                .Select(b => new NewRecipeDTO
+                {
+                    RecipeId = b.RecipeId,
+                    Flavor = b.Flavor,
+                    Ingredients = b.Ingredients,
+                    Procedure = b.Procedure,
+                    ImageUrl = b.ImageUrl,
+                    SubmissionDate = b.SubmissionDate,
+                    Status = b.Status,
+                    
+                })
+                .ToListAsync();
+
+            if (newrecipes == null || newrecipes.Count == 0)
+            {
+                return NotFound("No books found with the provided name.");
+            }
+
+            return Ok(newrecipes);
+        }
         [HttpPost]
         public async Task<ActionResult<NewRecipeDTO>> PostNewRecipe([FromForm] NewRecipeDTO newRecipeDTO, [FromForm] IFormFile image)
         {

@@ -115,6 +115,32 @@ namespace WebIcecream.Controllers
 
             return NoContent();
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<MembershipPackageDTO>>> SearchMembershipsByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Name parameter is required.");
+            }
+
+            var memberships = await _context.MembershipPackages
+                .Where(b => b.PackageName.Contains(name))
+                .Select(b => new MembershipPackageDTO
+                {
+                    PackageId = b.PackageId,
+                    PackageName = b.PackageName,
+                    Price = b.Price,
+                    DurationDays = b.DurationDays           
+                })
+                .ToListAsync();
+
+            if (memberships == null || memberships.Count == 0)
+            {
+                return NotFound("No MembershipPackage found with the provided name.");
+            }
+
+            return Ok(memberships);
+        }
 
         // DELETE: api/MembershipPackages/5
         [HttpDelete("{id}")]

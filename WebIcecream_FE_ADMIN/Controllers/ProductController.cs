@@ -1,36 +1,62 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
+using System.Threading.Tasks;
 using WebIcecream_FE_ADMIN.Models;
+using X.PagedList;
 
 namespace WebIcecream_FE_ADMIN.Controllers
 {
     public class ProductController : Controller
     {
-        Uri baseAddress = new Uri("https://localhost:7018/api");
         private readonly HttpClient _httpClient;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         public ProductController(IWebHostEnvironment webHostEnvironment)
         {
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = baseAddress;
+            _httpClient.BaseAddress = new Uri("https://localhost:7018/api");
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page, string searchString)
         {
             ViewData["IsLoggedIn"] = true;
-            var response = await _httpClient.GetAsync(_httpClient.BaseAddress + "/Books/GetBooks");
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var products = JsonConvert.DeserializeObject<List<ProductViewModel>>(data);
-                return View(products);
+                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/Books/GetBooks");
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var products = JsonConvert.DeserializeObject<List<ProductViewModel>>(data);
+
+                    // Filter by search string
+                    if (!string.IsNullOrEmpty(searchString))
+                    {
+                        products = products.Where(p => p.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                    // Paging logic
+                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
+                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+
+                    // Chia nhỏ danh sách sản phẩm thành từng trang
+                    var pagedList = products.ToPagedList(pageNumber, pageSize);
+
+                    return View(pagedList);
+                }
+                else
+                {
+                    return View(new List<ProductViewModel>());
+                }
             }
-            else
+            catch (Exception ex)
             {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
                 return View(new List<ProductViewModel>());
             }
         }
@@ -71,6 +97,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     content.Add(new StringContent(product.Description), "Description");
                     content.Add(new StringContent(product.Price.ToString()), "Price");
                     content.Add(new StringContent(product.ImageUrl), "ImageUrl");
+
                     if (image != null)
                     {
                         var fileContent = new StreamContent(image.OpenReadStream());
@@ -83,7 +110,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         content.Add(fileContent);
                     }
 
-                    var response = await _httpClient.PostAsync(_httpClient.BaseAddress + "/Books/PostBook", content);
+                    var response = await _httpClient.PostAsync($"{_httpClient.BaseAddress}/Books/PostBook", content);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -106,28 +133,42 @@ namespace WebIcecream_FE_ADMIN.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/Books/GetBook/{id}");
-            if (response.IsSuccessStatusCode)
+            ViewData["IsLoggedIn"] = true;
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var book = JsonConvert.DeserializeObject<ProductViewModel>(data);
-                return View(book);
+                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/Books/GetBook/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var product = JsonConvert.DeserializeObject<ProductViewModel>(data);
+                    return View(product);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = $"Failed to retrieve product. Status code: {response.StatusCode}";
+                    return RedirectToAction("Index");
+                }
             }
-            return NotFound();
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(ProductViewModel book, IFormFile image)
+        public async Task<IActionResult> Edit(ProductViewModel product, IFormFile image)
         {
+            ViewData["IsLoggedIn"] = true;
             try
             {
-                // Lấy lại ImageUrl cũ từ TempData nếu không có hình mới
-                if (TempData.ContainsKey("OldImageUrl") && book.KeepCurrentImage)
+                // Keep the old ImageUrl if the user chooses to retain the current image
+                if (TempData.ContainsKey("OldImageUrl") && product.KeepCurrentImage)
                 {
-                    book.ImageUrl = TempData["OldImageUrl"].ToString();
+                    product.ImageUrl = TempData["OldImageUrl"].ToString();
                 }
 
-                // Kiểm tra xem có tải lên hình mới không
                 if (image != null)
                 {
                     var fileName = Path.GetFileName(image.FileName);
@@ -138,27 +179,17 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         await image.CopyToAsync(stream);
                     }
 
-                    // Lưu tên file hình mới vào book.ImageUrl
-                    book.ImageUrl = fileName;
+                    product.ImageUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/images/{fileName}";
                 }
 
-                // Nếu không có hình mới và không chọn giữ nguyên hình cũ
-                if (image == null && !book.KeepCurrentImage)
-                {
-                    ModelState.AddModelError(nameof(ProductViewModel.Image), "Please choose an image.");
-                    return View("Edit", book); // Trả về view "Edit" với model hiện tại để người dùng chọn hình ảnh
-                }
-
-                // Chuẩn bị nội dung cho yêu cầu PUT
                 using (var content = new MultipartFormDataContent())
                 {
-                    content.Add(new StringContent(book.BookId.ToString()), "BookId");
-                    content.Add(new StringContent(book.Title), "Title");
-                    content.Add(new StringContent(book.Description), "Description");
-                    content.Add(new StringContent(book.Price.ToString()), "Price");
-                    content.Add(new StringContent(book.ImageUrl), "ImageUrl");
+                    content.Add(new StringContent(product.BookId.ToString()), "BookId");
+                    content.Add(new StringContent(product.Title), "Title");
+                    content.Add(new StringContent(product.Description), "Description");
+                    content.Add(new StringContent(product.Price.ToString()), "Price");
+                    content.Add(new StringContent(product.ImageUrl), "ImageUrl");
 
-                    // Nếu có tải lên hình mới thì thêm vào content
                     if (image != null)
                     {
                         var fileContent = new StreamContent(image.OpenReadStream());
@@ -171,18 +202,15 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         content.Add(fileContent);
                     }
 
-                    // Gửi yêu cầu PUT để cập nhật thông tin sách
-                    var apiUrl = $"{_httpClient.BaseAddress}/Books/PutBook/{book.BookId}";
-                    var response = await _httpClient.PutAsync(apiUrl, content);
+                    var response = await _httpClient.PutAsync($"{_httpClient.BaseAddress}/Books/PutBook/{product.BookId}", content);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        TempData["SuccessMessage"] = "Book updated successfully.";
+                        TempData["SuccessMessage"] = "Product updated successfully.";
                     }
                     else
                     {
-                        var errorMessage = await response.Content.ReadAsStringAsync();
-                        TempData["ErrorMessage"] = $"Failed to update book. Status code: {response.StatusCode}, Error: {errorMessage}";
+                        TempData["ErrorMessage"] = $"Failed to update product. Status code: {response.StatusCode}";
                     }
                 }
             }
@@ -193,22 +221,70 @@ namespace WebIcecream_FE_ADMIN.Controllers
 
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public async Task<IActionResult> Search(string searchName, int? page)
+        {
+            try
+            {
+                ViewData["IsLoggedIn"] = true;
 
-        [HttpGet]
+                // Validate input
+                if (string.IsNullOrEmpty(searchName))
+                {
+                    return RedirectToAction("Index");
+                }
+
+                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/Books/SearchBooksByName?name={searchName}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var products = JsonConvert.DeserializeObject<List<MembershipModel>>(data);
+
+                    // Paging logic
+                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
+                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+
+                    // Chia nhỏ danh sách sản phẩm thành từng trang
+                    var pagedList = products.ToPagedList(pageNumber, pageSize);
+
+                    return View("Index", pagedList);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "No products found matching the search criteria.";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            var response = await _httpClient.DeleteAsync($"{_httpClient.BaseAddress}/Books/DeleteBook/{id}");
-            if (response.IsSuccessStatusCode)
+            try
             {
-                TempData["SuccessMessage"] = "Product deleted successfully.";
+                var response = await _httpClient.DeleteAsync($"{_httpClient.BaseAddress}/Books/DeleteBook/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Product deleted successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to delete product.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Failed to delete product.";
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
             }
 
             return RedirectToAction("Index");
         }
-
     }
 }

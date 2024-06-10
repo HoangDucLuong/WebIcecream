@@ -47,6 +47,12 @@ namespace WebIcecream_FE_USER.Controllers
         public async Task<IActionResult> Index()
         {
             ViewData["IsLoggedIn"] = true;
+            var userId = GetUserIdFromToken();
+            if (userId == null)
+            {
+                TempData["ErrorMessage"] = "User not logged in.";
+                return RedirectToAction("Login", "Auth");
+            }
             var response = await _httpClient.GetAsync(_httpClient.BaseAddress + "/NewRecipes/GetNewRecipes");
             if (response.IsSuccessStatusCode)
             {
@@ -63,6 +69,12 @@ namespace WebIcecream_FE_USER.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            var userId = GetUserIdFromToken();
+            if (userId == null)
+            {
+                TempData["ErrorMessage"] = "User not logged in.";
+                return RedirectToAction("Login", "Auth");
+            }
             ViewData["IsLoggedIn"] = true;
             return View();
         }

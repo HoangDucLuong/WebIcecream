@@ -147,7 +147,34 @@ namespace WebIcecream.Controllers
                 return Ok();
             }
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<RecipeDTO>>> SearchRecipesByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Name parameter is required.");
+            }
 
+            var recipes = await _context.Recipes
+                .Where(b => b.Flavor.Contains(name))
+                .Select(b => new RecipeDTO
+                {
+                    RecipeId = b.RecipeId,
+                    Flavor = b.Flavor,
+                    Ingredients = b.Ingredients,
+                    ImageUrl = b.ImageUrl,
+                    Procedure = b.Procedure
+                    
+                })
+                .ToListAsync();
+
+            if (recipes == null || recipes.Count == 0)
+            {
+                return NotFound("No books found with the provided name.");
+            }
+
+            return Ok(recipes);
+        }
 
 
         [HttpDelete("{id}")]

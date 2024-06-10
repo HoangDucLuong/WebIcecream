@@ -121,14 +121,24 @@ namespace WebIcecream_FE_USER.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Login", "Auth");
+                // Assuming MembershipPackageId is part of the RegisterViewModel
+                var membershipPackage = await GetMembershipPackageById(model.PackageId);
+                if (membershipPackage != null)
+                {
+                    // Store the registration information in session
+                    HttpContext.Session.SetString("RegistrationInfo", JsonConvert.SerializeObject(model));
+
+                    // Redirect to the Payment action in Home controller of VNPayAPI area
+                    return RedirectToAction("Payment", "Home", new { area = "VNPayAPI", amount = membershipPackage.Price, infor = "Thông tin đăng ký thành viên", orderinfor = model.PackageId });
+                }
             }
             else
             {
                 string errorResponse = await response.Content.ReadAsStringAsync();
                 ModelState.AddModelError("", $"Registration failed: {errorResponse}");
-                return View(model);
             }
+
+            return View(model);
         }
 
         [HttpPost]
@@ -158,6 +168,19 @@ namespace WebIcecream_FE_USER.Controllers
                 {
                     return roleId;
                 }
+            }
+
+            return null;
+        }
+        private async Task<MembershipPackageModel> GetMembershipPackageById(int packageId)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.GetAsync($"https://localhost:7018/api/MembershipPackages/GetMembershipPackage/{packageId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<MembershipPackageModel>(data);
             }
 
             return null;

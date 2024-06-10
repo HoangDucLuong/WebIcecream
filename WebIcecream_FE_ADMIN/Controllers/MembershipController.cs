@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using WebIcecream_FE_ADMIN.Models;
+using X.PagedList;
+using X.PagedList.Mvc.Core;
 
 namespace WebIcecream_FE_ADMIN.Controllers
 {
@@ -22,17 +24,31 @@ namespace WebIcecream_FE_ADMIN.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page, string searchString)
         {
             ViewData["IsLoggedIn"] = true;
             try
             {
-                var response = await _httpClient.GetAsync(_httpClient.BaseAddress + "/MembershipPackages/GetMembershipPackages");
+                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/MembershipPackages/GetMembershipPackages");
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadAsStringAsync();
                     var memberships = JsonConvert.DeserializeObject<List<MembershipModel>>(data);
-                    return View(memberships);
+
+                    // Filter by search string
+                    if (!string.IsNullOrEmpty(searchString))
+                    {
+                        memberships = memberships.Where(p => p.PackageName.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                    // Paging logic
+                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
+                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+
+                    // Chia nhỏ danh sách sản phẩm thành từng trang
+                    var pagedList = memberships.ToPagedList(pageNumber, pageSize);
+
+                    return View(pagedList);
                 }
                 else
                 {
@@ -42,10 +58,50 @@ namespace WebIcecream_FE_ADMIN.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
-                return View(new List<MembershipModel>());
+                return View(new List<ProductViewModel>());
             }
         }
 
+        public async Task<IActionResult> Search(string searchName, int? page)
+        {
+            try
+            {
+                ViewData["IsLoggedIn"] = true;
+
+                // Validate input
+                if (string.IsNullOrEmpty(searchName))
+                {
+                    return RedirectToAction("Index");
+                }
+
+                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/MembershipPackages/SearchMembershipsByName?name={searchName}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var memberships = JsonConvert.DeserializeObject<List<MembershipModel>>(data);
+
+                    // Paging logic
+                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
+                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+
+                    // Chia nhỏ danh sách sản phẩm thành từng trang
+                    var pagedList = memberships.ToPagedList(pageNumber, pageSize);
+
+                    return View("Index", pagedList);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "No products found matching the search criteria.";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
         [HttpGet]
         public IActionResult Create()
         {

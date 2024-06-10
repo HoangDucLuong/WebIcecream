@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using WebIcecream_FE_ADMIN.Models;
 using System.Net.Http.Headers;
+using X.PagedList;
 
 namespace WebIcecream_FE_ADMIN.Controllers
 {
@@ -18,19 +19,90 @@ namespace WebIcecream_FE_ADMIN.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page, string searchString, string statusFilter)
         {
             ViewData["IsLoggedIn"] = true;
-            var response = await _httpClient.GetAsync(_httpClient.BaseAddress + "/NewRecipes/GetNewRecipes");
-            if (response.IsSuccessStatusCode)
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentStatusFilter"] = statusFilter;
+
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var recipes = JsonConvert.DeserializeObject<List<NewRecipeViewModel>>(data);
-                return View(recipes);
+                var response = await _httpClient.GetAsync(_httpClient.BaseAddress + "/NewRecipes/GetNewRecipes");
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var recipes = JsonConvert.DeserializeObject<List<NewRecipeViewModel>>(data);
+
+                    // Filter by search string
+                    if (!string.IsNullOrEmpty(searchString))
+                    {
+                        recipes = recipes.Where(r => r.Flavor.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                    // Filter by status
+                    if (!string.IsNullOrEmpty(statusFilter))
+                    {
+                        recipes = recipes.Where(r => r.Status.Equals(statusFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                    int pageSize = 5;
+                    int pageNumber = (page ?? 1);
+
+                    // Convert List<NewRecipeViewModel> to IPagedList<NewRecipeViewModel>
+                    IPagedList<NewRecipeViewModel> pagedList = recipes.ToPagedList(pageNumber, pageSize);
+
+                    return View(pagedList);
+                }
+                else
+                {
+                    return View(new List<NewRecipeViewModel>().ToPagedList(1, 10));
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return View(new List<NewRecipeViewModel>());
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return View(new List<NewRecipeViewModel>().ToPagedList(1, 10));
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Search(string searchName, int? page)
+        {
+            try
+            {
+                ViewData["IsLoggedIn"] = true;
+
+                // Validate input
+                if (string.IsNullOrEmpty(searchName))
+                {
+                    return RedirectToAction("Index");
+                }
+
+                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/NewRecipes/SearchNewRecipeByName?name={searchName}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var newrecipes = JsonConvert.DeserializeObject<List<NewRecipeViewModel>>(data);
+
+                    // Paging logic
+                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
+                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+
+                    // Chia nhỏ danh sách sản phẩm thành từng trang
+                    var pagedList = newrecipes.ToPagedList(pageNumber, pageSize);
+
+                    return View("Index", pagedList);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "No newrecipes found matching the search criteria.";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction("Index");
             }
         }
 

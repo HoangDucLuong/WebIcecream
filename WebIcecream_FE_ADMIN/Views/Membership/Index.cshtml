@@ -1,4 +1,6 @@
-﻿@model IEnumerable<WebIcecream_FE_ADMIN.Models.MembershipModel>
+﻿@using X.PagedList.Mvc.Core
+
+@model X.PagedList.IPagedList<WebIcecream_FE_ADMIN.Models.MembershipModel>
 
 @{
     ViewData["Title"] = "New Package Management";
@@ -41,7 +43,17 @@
     <div class="row">
         <div class="col">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+                <div class="mb-3">
+                    <form method="get" action="@Url.Action("Index")">
+                        <div class="input-group">
+                            <input type="text" name="searchString" class="form-control" placeholder="Search by PackageName..." />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-outline-secondary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <table class="table table-bordered table-striped" id="membershipTable">
                     <thead class="thead-dark">
                         <tr>
                             <th>@Html.DisplayNameFor(model => model.First().PackageId)</th>
@@ -70,35 +82,55 @@
             </div>
         </div>
     </div>
-    <div class="text-center">
-        <ul class="pagination" id="pagination"></ul>
-    </div>
+
+   
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            var rowsShown = 10;
-            var rowsTotal = $('#recipeTable tbody tr').length;
-            var numPages = Math.ceil(rowsTotal / rowsShown);
-            for (var i = 0; i < numPages; i++) {
-                var pageNum = i + 1;
-                $('#pagination').append('<li class="page-item"><a href="#" class="page-link" rel="' + i + '">' + pageNum + '</a></li>');
-            }
-            $('#recipeTable tbody tr').hide();
-            $('#recipeTable tbody tr').slice(0, rowsShown).show();
+            $('#membershipTable tbody tr').hide();
+            $('#membershipTable tbody tr').slice(0, @Model.PageSize).show(); // Hiển thị số lượng phần tử trên mỗi trang đầu tiên
+
             $('#pagination li:first').addClass('active');
             $('#pagination a').bind('click', function (e) {
                 e.preventDefault();
                 $('#pagination li').removeClass('active');
                 $(this).parent().addClass('active');
                 var currPage = $(this).attr('rel');
-                var startItem = currPage * rowsShown;
-                var endItem = startItem + rowsShown;
-                $('#recipeTable tbody tr').css('opacity', '0.0').hide().slice(startItem, endItem)
+                var startItem = currPage * @Model.PageSize;
+                var endItem = startItem + @Model.PageSize;
+                $('#membershipTable tbody tr').css('opacity', '0.0').hide().slice(startItem, endItem)
                     .css('display', 'table-row').animate({ opacity: 1 }, 300);
             });
         });
     </script>
+}
+@if (Model.PageCount > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.PageCount; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
 }

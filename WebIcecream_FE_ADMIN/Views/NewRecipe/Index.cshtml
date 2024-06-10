@@ -1,4 +1,6 @@
-﻿@model IEnumerable<WebIcecream_FE_ADMIN.Models.NewRecipeViewModel>
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<WebIcecream_FE_ADMIN.Models.NewRecipeViewModel>
+
 
 @{
     ViewData["Title"] = "New Recipe Management";
@@ -32,15 +34,21 @@
         </div>
     </div>
 
-    <div class="row mb-4">
-        <div class="col text-right">
-            <a class="btn btn-primary" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
-        </div>
-    </div>
+    
 
     <div class="row">
         <div class="col">
             <div class="table-responsive">
+                <div class="mb-3">
+                    <form method="get" action="@Url.Action("Index")">
+                        <div class="input-group">
+                            <input type="text" name="searchString" class="form-control" placeholder="Search by Flavor..." />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-outline-secondary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
                 <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
                         <tr>
@@ -50,7 +58,7 @@
                             <th>@Html.DisplayNameFor(model => model.First().Procedure)</th>
                             <th>@Html.DisplayNameFor(model => model.First().ImageUrl)</th>
                             <th>@Html.DisplayNameFor(model => model.First().Status)</th>
-                            <th>Actions</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -72,18 +80,18 @@
                                             <input type="hidden" name="id" value="@item.RecipeId" />
                                             <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i> Approve</button>
                                         </form>
-                                    }
-                                    <a class="btn btn-sm btn-info" asp-action="Edit" asp-route-id="@item.RecipeId"><i class="fa fa-edit"></i> Edit</a>
-                                    <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.RecipeId"><i class="fa fa-info-circle"></i> Details</a>
-                                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.RecipeId"><i class="fa fa-trash"></i> Delete</a>
+                                    }                   
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
+
         </div>
+       
     </div>
+    
     <div class="text-center">
         <ul class="pagination" id="pagination"></ul>
     </div>
@@ -115,4 +123,31 @@
             });
         });
     </script>
+}
+@if (Model.PageCount > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.PageCount; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
 }

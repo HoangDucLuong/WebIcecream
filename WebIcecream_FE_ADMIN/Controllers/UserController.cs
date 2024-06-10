@@ -43,6 +43,9 @@ namespace WebIcecream_FE_ADMIN.Controllers
                 string data = response.Content.ReadAsStringAsync().Result;
                 list = JsonConvert.DeserializeObject<List<UserViewModel>>(data);
 
+                // Lọc ra những người dùng có FullName không phải là "admin"
+                list = list.Where(u => u.FullName != "admin").ToList();
+
                 var memberships = GetPackages();
 
                 foreach (var user in list)
@@ -52,12 +55,11 @@ namespace WebIcecream_FE_ADMIN.Controllers
                 }
             }
 
-            int pageSize = 10;
+            int pageSize = 5;
             int pageNumber = (page ?? 1);
 
             return View(list.ToPagedList(pageNumber, pageSize));
         }
-
 
         [HttpGet]
         public IActionResult Create()
