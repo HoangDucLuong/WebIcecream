@@ -47,13 +47,13 @@ namespace WebIcecream_FE_USER.Controllers
                 else
                 {
                     _logger.LogError($"Failed to retrieve recipes: {response.StatusCode}");
-                    // Handle error accordingly
+                    
                 }
             }
             catch (System.Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving recipes");
-                // Handle exception accordingly
+                
             }
 
             return recipes;
@@ -77,7 +77,7 @@ namespace WebIcecream_FE_USER.Controllers
         {
             try
             {
-                ContactViewModel contact = new ContactViewModel("name", "email", "phone", "mess");//(name, email, phone, message);
+                ContactViewModel contact = new ContactViewModel("name", "email", "phone", "mess");
                 var json = JsonConvert.SerializeObject(contact);
                 var content = new StringContent("", Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(_httpClient.BaseAddress + "/Email/SendEmail?name=" + name + "&email=" + email + "&phone=" + phone + "&message=" + message, content);
@@ -92,7 +92,7 @@ namespace WebIcecream_FE_USER.Controllers
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
                     _logger.LogError($"Error sending email: {response.StatusCode}, {responseContent}");
-                    TempData["ErrorMessage"] = "ERROR  " + response.StatusCode + "  " + responseContent;//"There was an error sending your email. Please try again later. ";
+                    TempData["ErrorMessage"] = "ERROR  " + response.StatusCode + "  " + responseContent;
                     return RedirectToAction("Index");
                 }
             }

@@ -29,28 +29,25 @@ namespace WebIcecream.Controllers
         {
             try
             {
-                // Authenticate user
                 var userAccount = await _context.UserAccounts.FirstOrDefaultAsync(u => u.Username == changePasswordDTO.Username);
 
                 if (userAccount == null || !BCrypt.Net.BCrypt.Verify(changePasswordDTO.OldPassword, userAccount.Password))
                 {
-                    return Unauthorized("Invalid old password"); // Unauthorized if user not found or old password is incorrect
+                    return Unauthorized("Invalid old password"); 
                 }
 
-                // Hash new password using bcrypt
                 var hashedPassword = BCrypt.Net.BCrypt.HashPassword(changePasswordDTO.NewPassword);
                 userAccount.Password = hashedPassword;
 
                 await _context.SaveChangesAsync();
 
-                // Generate new JWT token after changing password
                 var tokenString = GenerateJWTToken(userAccount);
 
-                return Ok(new { Token = tokenString }); // Password changed successfully
+                return Ok(new { Token = tokenString }); 
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message); // Internal server error
+                return StatusCode(500, ex.Message); 
             }
         }
 
@@ -63,8 +60,8 @@ namespace WebIcecream.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, userAccount.Username.ToString()), // Add claim for username
-                    new Claim("userId", userAccount.UserId.ToString()) // Add claim for userId
+                    new Claim(ClaimTypes.Name, userAccount.Username.ToString()), 
+                    new Claim("userId", userAccount.UserId.ToString()) 
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(120),
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)

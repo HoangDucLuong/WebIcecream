@@ -15,11 +15,11 @@ namespace WebIcecream.Service
 
         public MailService()
         {
-            _smtpServer = "smtp.gmail.com"; // hoặc lấy từ biến môi trường Environment.GetEnvironmentVariable("SMTP_SERVER");
-            _smtpPort = 587; // hoặc lấy từ biến môi trường int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587");
-            _smtpUser = Environment.GetEnvironmentVariable("SMTP_USER") ?? "khangdy38@gmail.com"; // lấy từ biến môi trường
-            _smtpPass = Environment.GetEnvironmentVariable("SMTP_PASS") ?? "kpxt wsie cmam qzva"; // lấy từ biến môi trường
-            _toEmail = Environment.GetEnvironmentVariable("TO_EMAIL") ?? "icecream.test24@gmail.com"; // lấy từ biến môi trường
+            _smtpServer = "smtp.gmail.com";
+            _smtpPort = 587; 
+            _smtpUser = Environment.GetEnvironmentVariable("SMTP_USER") ?? "khangdy38@gmail.com"; 
+            _smtpPass = Environment.GetEnvironmentVariable("SMTP_PASS") ?? "kpxt wsie cmam qzva"; 
+            _toEmail = Environment.GetEnvironmentVariable("TO_EMAIL") ?? "icecream.test24@gmail.com"; 
         }
 
         public async Task SendEmailAsync(string name, string email, string phone, string message)

@@ -84,7 +84,6 @@ namespace WebIcecream_FE_USER.Controllers
         {
             try
             {
-                // Lấy UserID của người đang đăng nhập từ token
                 var userId = GetUserIdFromToken();
                 if (userId == null)
                 {
@@ -92,7 +91,6 @@ namespace WebIcecream_FE_USER.Controllers
                     return RedirectToAction("Index");
                 }
 
-                // Đặt giá trị mặc định cho UserId, Status và SubmissionDate
                 recipe.UserId = userId.Value;
                 recipe.Status = "waiting";
                 recipe.SubmissionDate = DateTime.Now;

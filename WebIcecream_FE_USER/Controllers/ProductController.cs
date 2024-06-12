@@ -31,13 +31,11 @@ namespace WebIcecream_FE_USER.Controllers
 
                     List<ProductViewModel> productList = JsonConvert.DeserializeObject<List<ProductViewModel>>(responseData); 
 
-                    //ViewBag.ApiData = responseData;
                     return View(productList);
 
                 }
                 else
                 {
-                    //ViewBag.ApiData = "Error calling the API";
                     return View(new List<ProductViewModel>());
 
                 }

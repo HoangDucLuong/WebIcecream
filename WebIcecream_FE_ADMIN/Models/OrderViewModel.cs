@@ -1,4 +1,4 @@
-﻿namespace WebIcecream_FE_USER.Models
+﻿namespace WebIcecream_FE_ADMIN.Models
 {
     public class OrderViewModel
     {
@@ -10,5 +10,6 @@
         public string ShippingAddress { get; set; } = null!;
         public int BookId { get; set; }
         public decimal Cost { get; set; }
+        public string IsConfirmed { get; set; } = null;
     }
 }

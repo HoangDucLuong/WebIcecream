@@ -27,6 +27,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-9">
                 <div class="bg-light rounded p-5">
+                    
                     <div class="row mb-3">
                         <dt class="col-sm-4 text-end">Full Name</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.FullName)</dd>
@@ -64,8 +65,9 @@
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.IsActive)</dd>
                     </div>
                     <div class="text-center mt-4">
-                        @Html.ActionLink("Edit", "Edit", new { id = Model.UserId }, new { @class = "btn btn-primary mx-2" })
+                        @Html.ActionLink("Edit", "Edit", new { id = Model.UserId, username = Model.Username }, new { @class = "btn btn-primary mx-2" })
                         @Html.ActionLink("Change Password", "ChangePassword", "ChangePassword", new { username = ViewBag.Username }, new { @class = "btn btn-secondary mx-2" })
+                        @Html.ActionLink("View Orders", "Index", "Order", new { userId = Model.UserId }, new { @class = "btn btn-info mx-2" })
                     </div>
                 </div>
             </div>

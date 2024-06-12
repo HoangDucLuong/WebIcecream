@@ -1,22 +1,20 @@
-﻿@model IEnumerable<WebIcecream_FE_USER.ViewModels.OrderViewModel>
+﻿@model IEnumerable<WebIcecream_FE_USER.Models.OrderViewModel>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Order</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.OrderId)
             </th>
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.UserId)
             </th>
             <th>
@@ -43,10 +41,10 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
+            <td hidden>
                 @Html.DisplayFor(modelItem => item.OrderId)
             </td>
-            <td>
+            <td hidden>
                 @Html.DisplayFor(modelItem => item.UserId)
             </td>
             <td>
@@ -68,9 +66,7 @@
                 @Html.DisplayFor(modelItem => item.Cost)
             </td>
             <td>
-                @Html.ActionLink("Create", "Create", new { id=item.BookId }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            @Html.ActionLink("Delete", "Delete", new { id=item.OrderId })
             </td>
         </tr>
 }

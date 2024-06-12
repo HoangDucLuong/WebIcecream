@@ -11,16 +11,14 @@ namespace WebIcecream.Controllers
     [ApiController]
     public class FeedbacksController : ControllerBase
     {
-        private static List<FeedbackDTO> _feedbacks = new List<FeedbackDTO>(); // In-memory store for feedbacks
+        private static List<FeedbackDTO> _feedbacks = new List<FeedbackDTO>(); 
 
-        // GET: api/feedbacks
         [HttpGet]
         public ActionResult<IEnumerable<FeedbackDTO>> GetAllFeedbacks()
         {
             return Ok(_feedbacks);
         }
 
-        // GET: api/feedbacks/{id}
         [HttpGet("{id}")]
         public ActionResult<FeedbackDTO> GetFeedbackById(int id)
         {
@@ -33,17 +31,15 @@ namespace WebIcecream.Controllers
             return feedback;
         }
 
-        // POST: api/feedbacks
         [HttpPost]
         public ActionResult<FeedbackDTO> CreateFeedback([FromBody] FeedbackDTO feedbackDto)
         {
             feedbackDto.FeedbackId = _feedbacks.Any() ? _feedbacks.Max(f => f.FeedbackId) + 1 : 1;
-            feedbackDto.FeedbackDate = DateTime.UtcNow; // Set the feedback date to the current UTC time
+            feedbackDto.FeedbackDate = DateTime.UtcNow; 
             _feedbacks.Add(feedbackDto);
             return CreatedAtAction(nameof(GetFeedbackById), new { id = feedbackDto.FeedbackId }, feedbackDto);
         }
 
-        // PUT: api/feedbacks/{id}
         [HttpPut("{id}")]
         public IActionResult UpdateFeedback(int id, [FromBody] FeedbackDTO feedbackDto)
         {
@@ -53,12 +49,11 @@ namespace WebIcecream.Controllers
                 return NotFound();
             }
 
-            feedbackDto.FeedbackId = id; // Ensure the ID is correct
+            feedbackDto.FeedbackId = id; 
             _feedbacks[index] = feedbackDto;
             return NoContent();
         }
 
-        // DELETE: api/feedbacks/{id}
         [HttpDelete("{id}")]
         public IActionResult DeleteFeedback(int id)
         {

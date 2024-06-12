@@ -33,13 +33,11 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     var data = await response.Content.ReadAsStringAsync();
                     var recipes = JsonConvert.DeserializeObject<List<NewRecipeViewModel>>(data);
 
-                    // Filter by search string
                     if (!string.IsNullOrEmpty(searchString))
                     {
                         recipes = recipes.Where(r => r.Flavor.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
                     }
 
-                    // Filter by status
                     if (!string.IsNullOrEmpty(statusFilter))
                     {
                         recipes = recipes.Where(r => r.Status.Equals(statusFilter, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -48,7 +46,6 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     int pageSize = 5;
                     int pageNumber = (page ?? 1);
 
-                    // Convert List<NewRecipeViewModel> to IPagedList<NewRecipeViewModel>
                     IPagedList<NewRecipeViewModel> pagedList = recipes.ToPagedList(pageNumber, pageSize);
 
                     return View(pagedList);
@@ -71,7 +68,6 @@ namespace WebIcecream_FE_ADMIN.Controllers
             {
                 ViewData["IsLoggedIn"] = true;
 
-                // Validate input
                 if (string.IsNullOrEmpty(searchName))
                 {
                     return RedirectToAction("Index");
@@ -84,11 +80,9 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     var data = await response.Content.ReadAsStringAsync();
                     var newrecipes = JsonConvert.DeserializeObject<List<NewRecipeViewModel>>(data);
 
-                    // Paging logic
-                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
-                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+                    int pageSize = 5; 
+                    int pageNumber = (page ?? 1); 
 
-                    // Chia nhỏ danh sách sản phẩm thành từng trang
                     var pagedList = newrecipes.ToPagedList(pageNumber, pageSize);
 
                     return View("Index", pagedList);

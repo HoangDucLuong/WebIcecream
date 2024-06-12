@@ -29,42 +29,36 @@ namespace WebIcecream.Controllers
         [HttpPost("login")]
         public IActionResult Login(LoginDTO loginDTO)
         {
-            // Authenticate user
+            
             var user = _context.UserAccounts.Include(u => u.User).SingleOrDefault(u => u.Username == loginDTO.Username);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password))
             {
-                return Unauthorized(); // Unauthorized if user not found or invalid credentials
+                return Unauthorized();
             }
 
-            // Generate JWT token
             var tokenString = GenerateJWTToken(user);
 
-            // Return token
             return Ok(new { Token = tokenString });
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDTO registerDTO)
         {
-            // Check if username is already taken
             if (await _context.UserAccounts.AnyAsync(u => u.Username == registerDTO.Username))
             {
                 return BadRequest("Username is already taken");
             }
 
-            // Hash password using bcrypt
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
 
-            // Retrieve membership package information (assuming you have it available)
             var package = await _context.MembershipPackages.FirstOrDefaultAsync(p => p.PackageId == registerDTO.PackageId);
 
             if (package == null)
             {
-                return BadRequest("Invalid PackageId"); // Handle case where package is not found
+                return BadRequest("Invalid PackageId");
             }
 
-            // Create new user profile
             var newUser = new User
             {
                 FullName = registerDTO.FullName,
@@ -73,21 +67,20 @@ namespace WebIcecream.Controllers
                 Gender = registerDTO.Gender,
                 Email = registerDTO.Email,
                 PhoneNumber = registerDTO.PhoneNumber,
-                PaymentStatus = "Pending", // You may set a default payment status
+                PaymentStatus = "Pending", 
                 RegistrationDate = DateTime.Now,
-                IsActive = true, // Assuming user is active upon registration
+                IsActive = true, 
                 PackageId = registerDTO.PackageId,
                 PackageStartDate = DateTime.Now,
-                PackageEndDate = DateTime.Now.AddDays(package.DurationDays) // Set end date based on package duration
+                PackageEndDate = DateTime.Now.AddDays(package.DurationDays) 
             };
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            // Create new user account with hashed password and default role
             var newUserAccount = new UserAccount
             {
-                UserId = newUser.UserId, // Assign UserId from newly created User
+                UserId = newUser.UserId, 
                 Username = registerDTO.Username,
                 Password = hashedPassword,
                 RoleId = 1
@@ -96,16 +89,14 @@ namespace WebIcecream.Controllers
             _context.UserAccounts.Add(newUserAccount);
             await _context.SaveChangesAsync();
 
-            return StatusCode(201); // Created
+            return StatusCode(201); 
         }
 
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            // Clear token from session or cookie
-            HttpContext.Session.Remove("Token"); // or HttpContext.Response.Cookies.Delete("Token")
+            HttpContext.Session.Remove("Token"); 
 
-            // Return success status code
             return Ok();
         }
 

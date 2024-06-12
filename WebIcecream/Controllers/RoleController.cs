@@ -17,7 +17,6 @@ namespace WebIcecream.Controllers
             _context = context;
         }
 
-        // GET: api/role
         [HttpGet]
         public ActionResult<IEnumerable<RoleDTO>> GetRoles()
         {
@@ -32,7 +31,6 @@ namespace WebIcecream.Controllers
             return Ok(roles);
         }
 
-        // GET: api/role/{id}
         [HttpGet("{id}")]
         public ActionResult<RoleDTO> GetRoleById(int id)
         {
@@ -53,7 +51,7 @@ namespace WebIcecream.Controllers
             return Ok(role);
         }
 
-        // POST: api/role
+
         [HttpPost]
         public ActionResult<RoleDTO> CreateRole(RoleDTO roleDTO)
         {
@@ -70,12 +68,11 @@ namespace WebIcecream.Controllers
             _context.Roles.Add(role);
             _context.SaveChanges();
 
-            roleDTO.RoleId = role.RoleId; // Assign the generated RoleId to the DTO
+            roleDTO.RoleId = role.RoleId; 
 
             return CreatedAtAction(nameof(GetRoleById), new { id = roleDTO.RoleId }, roleDTO);
         }
 
-        // PUT: api/role/{id}
         [HttpPut("{id}")]
         public IActionResult UpdateRole(int id, RoleDTO roleDTO)
         {
@@ -98,7 +95,6 @@ namespace WebIcecream.Controllers
             return NoContent();
         }
 
-        // DELETE: api/role/{id}
         [HttpDelete("{id}")]
         public IActionResult DeleteRole(int id)
         {

@@ -4,6 +4,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using WebIcecream_FE_USER.Models;
 
@@ -34,18 +35,18 @@ namespace WebIcecream_FE_USER.Controllers
                     var memberships = JsonConvert.DeserializeObject<List<MembershipPackageModel>>(data);
                     ViewData["Membership"] = memberships;
 
-                    return View(memberships); // Pass memberships to the view
+                    return View(memberships); 
                 }
                 else
                 {
                     TempData["ErrorMessage"] = "Failed to retrieve Membership packages.";
-                    return View(); // Return the view even if data retrieval fails
+                    return View(); 
                 }
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Error retrieving Membership packages: {ex.Message}";
-                return View(); // Handle any exceptions and return the view
+                return View(); 
             }
         }
 
@@ -62,15 +63,14 @@ namespace WebIcecream_FE_USER.Controllers
 
             if (userId == null)
             {
-                return RedirectToAction("Error", "Home"); // Redirect to error page or handle as needed
+                return RedirectToAction("Error", "Home"); 
             }
 
-            // Call API to renew membership
             var response = await _httpClient.PostAsJsonAsync($"{_httpClient.BaseAddress}/User/RenewMembership/{userId}", model);
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Details"); // Redirect to details page after successful renewal
+                return RedirectToAction("Details");
             }
             else
             {
@@ -83,15 +83,13 @@ namespace WebIcecream_FE_USER.Controllers
         [HttpGet]
         public async Task<IActionResult> Details()
         {
-            // Lấy UserId từ token
             var userId = GetUserIdFromToken();
 
             if (userId == null)
             {
-                return RedirectToAction("Error", "Home"); // Redirect to error page or handle as needed
+                return RedirectToAction("Error", "Home"); 
             }
 
-            // Gửi yêu cầu lấy thông tin người dùng từ API backend
             var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/User/GetUser/{userId}");
             if (response.IsSuccessStatusCode)
             {
@@ -106,50 +104,93 @@ namespace WebIcecream_FE_USER.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
-            // Lấy UserId từ token
             var userId = GetUserIdFromToken();
-
             if (userId == null)
             {
-                return RedirectToAction("Error", "Home"); // Redirect to error page or handle as needed
+                return RedirectToAction("Error", "Home");
             }
 
-            // Gửi yêu cầu lấy thông tin người dùng từ API backend
+            var username = GetUsernameFromToken();
+            if (username == null)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/User/GetUser/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 var userJson = await response.Content.ReadAsStringAsync();
                 var userViewModel = JsonConvert.DeserializeObject<UserViewModel>(userJson);
-                return View(userViewModel); // Trả về view để chỉnh sửa thông tin người dùng
+
+                userViewModel.Username = username;
+
+                return View(userViewModel);
             }
 
             return View("Error");
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Edit(UserViewModel userViewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View(userViewModel); // Nếu dữ liệu không hợp lệ, trả về lại form để người dùng sửa lại
+                return View(userViewModel);
             }
 
             var userId = GetUserIdFromToken();
-
             if (userId == null)
             {
-                return RedirectToAction("Error", "Home"); // Redirect to error page or handle as needed
+                return RedirectToAction("Error", "Home");
             }
 
-            // Gửi yêu cầu PUT lên API backend để cập nhật thông tin người dùng
-            var response = await _httpClient.PutAsJsonAsync($"{_httpClient.BaseAddress}/User/PutUser/{userId}", userViewModel);
-            if (response.IsSuccessStatusCode)
+            userViewModel.Username = GetUsernameFromToken();
+
+            try
             {
-                return RedirectToAction("Details");
+                
+                var json = JsonConvert.SerializeObject(userViewModel);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+               
+                var response = await _httpClient.PutAsync($"{_httpClient.BaseAddress}/User/PutUser/{userId}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Details");
+                }
+                else
+                {
+              
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError("", $"Error updating user: {errorContent}");
+                    return View("Error");
+                }
+            }
+            catch (Exception ex)
+            {
+               
+                ModelState.AddModelError("", $"Exception: {ex.Message}");
+                return View("Error");
+            }
+        }
+
+
+        private string GetUsernameFromToken()
+        {
+            var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
+
+            if (token == null)
+            {
+                return null;
             }
 
-            // Xử lý lỗi nếu không thành công
-            return View("Error");
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+
+            return jsonToken.Claims.FirstOrDefault(claim => claim.Type == "unique_name")?.Value;
         }
 
         private string GetUserIdFromToken()

@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using WebIcecream_FE_USER;
 using WebIcecream_FE_USER.Models;
-using WebIcecream_FE_USER.ViewModels;
 
 namespace WebIcecream_FE_USER.Controllers
 {
@@ -58,7 +57,6 @@ namespace WebIcecream_FE_USER.Controllers
 
                     List<RecipeViewModel> productList = JsonConvert.DeserializeObject<List<RecipeViewModel>>(responseData);
 
-                    //ViewBag.ApiData = responseData;
                     return View(productList);
 
                 }

@@ -1,0 +1,17 @@
+﻿@model WebIcecream_FE_USER.Models.OrderViewModel
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h3 class="text-center">Delete Order Success!!!</h3>
+
+<div class="text-center"> 
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="OrderId" />
+        <input type="submit" hidden value="Delete" class="btn btn-danger" /> |
+        <button onclick="location.href='@Url.Action("Index", "Product")'" class="btn btn-primary">OK</button>ư
+    </form>
+</div>

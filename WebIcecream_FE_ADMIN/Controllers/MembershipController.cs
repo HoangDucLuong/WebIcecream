@@ -41,11 +41,9 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         memberships = memberships.Where(p => p.PackageName.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
                     }
 
-                    // Paging logic
-                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
-                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+                    int pageSize = 5; 
+                    int pageNumber = (page ?? 1); 
 
-                    // Chia nhỏ danh sách sản phẩm thành từng trang
                     var pagedList = memberships.ToPagedList(pageNumber, pageSize);
 
                     return View(pagedList);
@@ -68,7 +66,7 @@ namespace WebIcecream_FE_ADMIN.Controllers
             {
                 ViewData["IsLoggedIn"] = true;
 
-                // Validate input
+                
                 if (string.IsNullOrEmpty(searchName))
                 {
                     return RedirectToAction("Index");
@@ -81,11 +79,9 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     var data = await response.Content.ReadAsStringAsync();
                     var memberships = JsonConvert.DeserializeObject<List<MembershipModel>>(data);
 
-                    // Paging logic
-                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
-                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+                    int pageSize = 5; 
+                    int pageNumber = (page ?? 1); 
 
-                    // Chia nhỏ danh sách sản phẩm thành từng trang
                     var pagedList = memberships.ToPagedList(pageNumber, pageSize);
 
                     return View("Index", pagedList);
@@ -114,7 +110,6 @@ namespace WebIcecream_FE_ADMIN.Controllers
         {
             try
             {
-                // Ensure PackageId is null to allow server to assign it
                 membership.PackageId = null;
 
                 var content = new StringContent(JsonConvert.SerializeObject(membership), System.Text.Encoding.UTF8, "application/json");

@@ -34,17 +34,14 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     var data = await response.Content.ReadAsStringAsync();
                     var products = JsonConvert.DeserializeObject<List<ProductViewModel>>(data);
 
-                    // Filter by search string
                     if (!string.IsNullOrEmpty(searchString))
                     {
                         products = products.Where(p => p.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
                     }
 
-                    // Paging logic
-                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
-                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+                    int pageSize = 5; 
+                    int pageNumber = (page ?? 1); 
 
-                    // Chia nhỏ danh sách sản phẩm thành từng trang
                     var pagedList = products.ToPagedList(pageNumber, pageSize);
 
                     return View(pagedList);
@@ -83,11 +80,9 @@ namespace WebIcecream_FE_ADMIN.Controllers
                         await image.CopyToAsync(stream);
                     }
 
-                    // Get the base URL of the application
                     var request = HttpContext.Request;
                     var baseUrl = $"{request.Scheme}://{request.Host}";
 
-                    // Combine the base URL with the relative path to create the full URL
                     product.ImageUrl = $"{baseUrl}/images/{fileName}";
                 }
 
@@ -163,7 +158,6 @@ namespace WebIcecream_FE_ADMIN.Controllers
             ViewData["IsLoggedIn"] = true;
             try
             {
-                // Keep the old ImageUrl if the user chooses to retain the current image
                 if (TempData.ContainsKey("OldImageUrl") && product.KeepCurrentImage)
                 {
                     product.ImageUrl = TempData["OldImageUrl"].ToString();
@@ -241,11 +235,9 @@ namespace WebIcecream_FE_ADMIN.Controllers
                     var data = await response.Content.ReadAsStringAsync();
                     var products = JsonConvert.DeserializeObject<List<MembershipModel>>(data);
 
-                    // Paging logic
-                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
-                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+                    int pageSize = 5; 
+                    int pageNumber = (page ?? 1); 
 
-                    // Chia nhỏ danh sách sản phẩm thành từng trang
                     var pagedList = products.ToPagedList(pageNumber, pageSize);
 
                     return View("Index", pagedList);

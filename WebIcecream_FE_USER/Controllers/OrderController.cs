@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using WebIcecream_FE_USER.ViewModels;
+using WebIcecream_FE_USER.Models;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace WebIcecream_FE_USER.Controllers
 {
@@ -40,15 +41,28 @@ namespace WebIcecream_FE_USER.Controllers
             return null;
         }
 
-        // GET: Order
+
         public async Task<IActionResult> Index()
         {
+            var userId = GetUserIdFromToken();
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var client = _httpClientFactory.CreateClient("ApiClient");
-            var response = await client.GetAsync("https://localhost:7018/api/orders/getallorders");
+            var response = await client.GetAsync($"https://localhost:7018/api/orders/getordersbyuserid/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
                 var orders = JsonConvert.DeserializeObject<IEnumerable<OrderViewModel>>(data);
+
+                if (!orders.Any())
+                {
+                    TempData["ErrorMessage"] = "Bạn chưa có đơn hàng nào.";
+                    return RedirectToAction("Details", "User");
+                }
+
                 return View(orders);
             }
             else
@@ -56,25 +70,36 @@ namespace WebIcecream_FE_USER.Controllers
                 return View("Error");
             }
         }
-
-        // GET: Order/Details/5
+      
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
+            var userId = GetUserIdFromToken();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Error", "Home");
+            }
             var client = _httpClientFactory.CreateClient("ApiClient");
             var response = await client.GetAsync($"https://localhost:7018/api/Orders/GetOrderById/{id}");
             if (response.IsSuccessStatusCode)
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var order = JsonConvert.DeserializeObject<OrderViewModel>(data);
-                return View(order);
+                var userJson = await response.Content.ReadAsStringAsync();
+                var userViewModel = JsonConvert.DeserializeObject<UserViewModel>(userJson);
+
+                if (TempData.ContainsKey("ErrorMessage"))
+                {
+                    ViewBag.ErrorMessage = TempData["ErrorMessage"].ToString();
+                }
+
+                return View(userViewModel);
             }
-            else
-            {
-                return View("Error");
-            }
+
+            return View("Error");
         }
 
-        // GET: Order/Create
+
+        
         public IActionResult Create()
         {
             var userId = GetUserIdFromToken();
@@ -83,44 +108,53 @@ namespace WebIcecream_FE_USER.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            // Create a new OrderViewModel instance
             var order = new OrderViewModel
             {
-                UserId = userId.Value // Assign UserId to the order
-                                      // Set other properties of the order as needed
+                UserId = userId.Value
             };
 
-            // Store order information in session
-            HttpContext.Session.SetString("OrderInfo", JsonConvert.SerializeObject(order));
-
-            // Return the Create view to display the order creation form
             return View(order);
         }
 
-
-        // POST: Order/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrderViewModel order)
         {
-            if (ModelState.IsValid)
+            var userId = GetUserIdFromToken();
+            if (userId == null)
             {
-                // Store the order information in session
-                HttpContext.Session.SetString("OrderInfo", JsonConvert.SerializeObject(order));
-
-                // Redirect to the Payment action in Home controller of VNPayAPI area
-                return RedirectToAction("Payment", "Home", new { area = "VNPayAPI", amount = order.Cost, infor = "Thông tin đơn hàng", orderinfor = order.OrderId });
+                return RedirectToAction("Login", "Auth");
             }
 
-            // If model state is not valid, return the Create view with the order model to correct errors
+            order.UserId = userId.Value;
+
+            if (ModelState.IsValid)
+            {
+                var client = _httpClientFactory.CreateClient("ApiClient");
+                var json = JsonConvert.SerializeObject(order);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("https://localhost:7018/api/orders/postorder", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Đơn hàng đã được lưu vào cơ sở dữ liệu.";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    // Handle the case where saving to the database failed
+                    ModelState.AddModelError(string.Empty, "Lỗi khi lưu đơn hàng vào cơ sở dữ liệu.");
+                    return View("Error");
+                }
+            }
+
             return View(order);
         }
 
-        // GET: Order/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var client = _httpClientFactory.CreateClient("ApiClient");
-            var response = await client.GetAsync($"api/orders/{id}");
+            var response = await client.GetAsync($"https://localhost:7018/api/orders/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
@@ -133,7 +167,6 @@ namespace WebIcecream_FE_USER.Controllers
             }
         }
 
-        // POST: Order/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, OrderViewModel order)
@@ -158,12 +191,11 @@ namespace WebIcecream_FE_USER.Controllers
 
             return View(order);
         }
-
-        // GET: Order/Delete/5
+        
         public async Task<IActionResult> Delete(int id)
         {
             var client = _httpClientFactory.CreateClient("ApiClient");
-            var response = await client.GetAsync($"api/orders/{id}");
+            var response = await client.DeleteAsync($"https://localhost:7018/api/orders/deleteorder/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
@@ -176,13 +208,13 @@ namespace WebIcecream_FE_USER.Controllers
             }
         }
 
-        // POST: Order/Delete/5
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var client = _httpClientFactory.CreateClient("ApiClient");
-            var response = await client.DeleteAsync($"https://localhost:7018/api/orders/deleteorder/{id}");
+            var response = await client.DeleteAsync($"https://localhost:7018/api/orders/{id}");
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToAction(nameof(Index));

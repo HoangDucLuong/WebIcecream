@@ -1,8 +1,11 @@
-﻿namespace WebIcecream_FE_USER.Models
+﻿using System.ComponentModel.DataAnnotations;
+namespace WebIcecream_FE_USER.Models
 {
     public class UserViewModel
     {
         public int UserId { get; set; }
+        [Required]
+        public string Username { get; set; }
 
         public string FullName { get; set; }
 

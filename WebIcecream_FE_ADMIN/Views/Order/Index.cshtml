@@ -1,0 +1,96 @@
+﻿@using X.PagedList.Mvc.Core;
+
+@model X.PagedList.IPagedList<WebIcecream_FE_ADMIN.Models.OrderViewModel>
+
+@{
+    ViewData["Title"] = "Order Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h1 class="section-title position-relative d-inline-block">Order Management</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <div class="mb-3">
+                    <form method="get" action="@Url.Action("Index")">
+                        <div class="input-group">
+                            <input type="text" name="searchString" class="form-control" placeholder="Search by UserName..." />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-outline-secondary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.First().OrderId)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().UserId)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().Username)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().PhoneNumber)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().ShippingAddress)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().BookId)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().Cost)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => item.OrderId)</td>
+                                <td>@Html.DisplayFor(modelItem => item.UserId)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Username)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
+                                <td>@Html.DisplayFor(modelItem => item.ShippingAddress)</td>
+                                <td>@Html.DisplayFor(modelItem => item.BookId)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Cost)</td>
+                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+}
+@if (Model.PageCount > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.PageCount; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+

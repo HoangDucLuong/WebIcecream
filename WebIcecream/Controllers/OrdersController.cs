@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using WebIcecream.DTOs;
+using WebIcecream.Models;
 
 namespace WebIcecream.Controllers
 {
@@ -10,77 +12,202 @@ namespace WebIcecream.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private static List<OrderDTO> _orders = new List<OrderDTO>(); 
+        private readonly ProjectDak3Context _context;
 
-        // GET: api/orders
-        [HttpGet]
-        public ActionResult<IEnumerable<OrderDTO>> GetAllOrders()
+        public OrdersController(ProjectDak3Context context)
         {
-            return Ok(_orders);
+            _context = context;
         }
 
-        // GET: api/orders/{id}
-        [HttpGet("{id}")]
-        public ActionResult<OrderDTO> GetOrderById(int id)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders()
         {
-            var order = _orders.FirstOrDefault(o => o.OrderId == id);
+            return await _context.Orders
+                .Select(order => new OrderDTO
+                {
+                    OrderId = order.OrderId,
+                    UserId = order.UserId,
+                    Username = order.Username,
+                    Email = order.Email,
+                    PhoneNumber = order.PhoneNumber,
+                    ShippingAddress = order.ShippingAddress,
+                    BookId = order.BookId,
+                    Cost = order.Cost,
+                    Price = order.Price
+                })
+                .ToListAsync();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<OrderDTO>> GetOrder(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+
             if (order == null)
             {
                 return NotFound();
             }
 
-            return order;
+            var orderDTO = new OrderDTO
+            {
+                OrderId = order.OrderId,
+                UserId = order.UserId,
+                Username = order.Username,
+                Email = order.Email,
+                PhoneNumber = order.PhoneNumber,
+                ShippingAddress = order.ShippingAddress,
+                BookId = order.BookId,
+                Cost = order.Cost,
+                Price = order.Price
+            };
+
+            return orderDTO;
         }
 
-        // POST: api/orders
         [HttpPost]
-        public ActionResult<OrderDTO> CreateOrder([FromBody] OrderDTO orderDto)
+        public async Task<ActionResult<OrderDTO>> PostOrder(OrderDTO orderDTO)
         {
-            // In a real scenario, you would typically validate the orderDto before proceeding.
-            // Here, we assume the input is valid for simplicity.
+            var order = new Order
+            {
+                UserId = orderDTO.UserId,
+                Username = orderDTO.Username,
+                Email = orderDTO.Email,
+                PhoneNumber = orderDTO.PhoneNumber,
+                ShippingAddress = orderDTO.ShippingAddress,
+                BookId = orderDTO.BookId,
+                Cost = orderDTO.Cost,
+                Price = orderDTO.Price
+            };
 
-            orderDto.OrderId = _orders.Any() ? _orders.Max(o => o.OrderId) + 1 : 1;
-            _orders.Add(orderDto);
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetOrderById), new { id = orderDto.OrderId }, orderDto);
+            orderDTO.OrderId = order.OrderId;
+
+            return CreatedAtAction(nameof(GetOrder), new { id = orderDTO.OrderId }, orderDTO);
         }
 
-        // PUT: api/orders/{id}
+
         [HttpPut("{id}")]
-        public IActionResult UpdateOrder(int id, [FromBody] OrderDTO orderDto)
+        public async Task<IActionResult> PutOrder(int id, OrderDTO orderDTO)
         {
-            var existingOrder = _orders.FirstOrDefault(o => o.OrderId == id);
-            if (existingOrder == null)
+            if (id != orderDTO.OrderId)
+            {
+                return BadRequest();
+            }
+
+            var order = await _context.Orders.FindAsync(id);
+
+            if (order == null)
             {
                 return NotFound();
             }
 
-            // Update the fields of existingOrder with data from orderDto
-            existingOrder.UserId = orderDto.UserId;
-            existingOrder.Username = orderDto.Username;
-            existingOrder.Email = orderDto.Email;
-            existingOrder.PhoneNumber = orderDto.PhoneNumber;
-            existingOrder.ShippingAddress = orderDto.ShippingAddress;
-            existingOrder.BookId = orderDto.BookId;
-            existingOrder.Cost = orderDto.Cost;
-            
-            existingOrder.Price = orderDto.Price;
+            order.UserId = orderDTO.UserId;
+            order.Username = orderDTO.Username;
+            order.Email = orderDTO.Email;
+            order.PhoneNumber = orderDTO.PhoneNumber;
+            order.ShippingAddress = orderDTO.ShippingAddress;
+            order.BookId = orderDTO.BookId;
+            order.Cost = orderDTO.Cost;
+            order.Price = orderDTO.Price;
+
+            _context.Entry(order).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!OrderExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrdersByUserId(int userId)
+        {
+            var orders = await _context.Orders
+                .Where(order => order.UserId == userId)
+                .Select(order => new OrderDTO
+                {
+                    OrderId = order.OrderId,
+                    UserId = order.UserId,
+                    Username = order.Username,
+                    Email = order.Email,
+                    PhoneNumber = order.PhoneNumber,
+                    ShippingAddress = order.ShippingAddress,
+                    BookId = order.BookId,
+                    Cost = order.Cost,
+                    Price = order.Price
+                })
+                .ToListAsync();
+
+            if (orders == null || !orders.Any())
+            {
+                return NotFound();
+            }
+
+            return orders;
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<OrderDTO>>> SearchOrdersByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Name parameter is required.");
+            }
+
+            var orders = await _context.Orders
+                .Where(b => b.Username.Contains(name))
+                .Select(b => new OrderDTO
+                {
+                    OrderId = b.OrderId,
+                    UserId = b.UserId,
+                    Username = b.Username,
+                    Email = b.Email,
+                    PhoneNumber = b.PhoneNumber,
+                    ShippingAddress = b.ShippingAddress,
+                    BookId = b.BookId,
+                    Cost = b.Cost,
+                    Price = b.Price
+                })
+                .ToListAsync();
+
+            if (orders == null || orders.Count == 0)
+            {
+                return NotFound("No books found with the provided name.");
+            }
+
+            return Ok(orders);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // DELETE: api/orders/{id}
-        [HttpDelete("{id}")]
-        public IActionResult DeleteOrder(int id)
+        private bool OrderExists(int id)
         {
-            var existingOrder = _orders.FirstOrDefault(o => o.OrderId == id);
-            if (existingOrder == null)
-            {
-                return NotFound();
-            }
-
-            _orders.Remove(existingOrder);
-            return NoContent();
+            return _context.Orders.Any(e => e.OrderId == id);
         }
     }
 }

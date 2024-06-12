@@ -44,32 +44,27 @@ namespace WebIcecream_FE_USER.Controllers
                 string data = await response.Content.ReadAsStringAsync();
                 var token = JsonConvert.DeserializeObject<TokenResponse>(data);
 
-                // Save token to session
                 HttpContext.Session.SetString("Token", token.Token);
                 HttpContext.Session.SetString("Username", model.Username);
 
-                // Check user's role and isActive status
                 var userRoleId = GetUserRoleIdFromToken();
-                var isActive = await IsUserActive(model.Username); // Assuming a method to check IsActive status
+                var isActive = await IsUserActive(model.Username);
 
                 if (userRoleId == 1)
                 {
                     if (isActive)
                     {
-                        // Update login status after successful login
                         ViewData["IsLoggedIn"] = true;
 
-                        return RedirectToAction("Index", "Home"); // Redirect to home page after successful login
+                        return RedirectToAction("Index", "Home");
                     }
                     else
                     {
-                        // Redirect to renew membership page
                         return RedirectToAction("RenewMembership", "User");
                     }
                 }
                 else
                 {
-                    // Invalidate current session and redirect to login
                     HttpContext.Session.Remove("Token");
                     HttpContext.Session.Remove("Username");
 
@@ -121,24 +116,14 @@ namespace WebIcecream_FE_USER.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                // Assuming MembershipPackageId is part of the RegisterViewModel
-                var membershipPackage = await GetMembershipPackageById(model.PackageId);
-                if (membershipPackage != null)
-                {
-                    // Store the registration information in session
-                    HttpContext.Session.SetString("RegistrationInfo", JsonConvert.SerializeObject(model));
-
-                    // Redirect to the Payment action in Home controller of VNPayAPI area
-                    return RedirectToAction("Payment", "Home", new { area = "VNPayAPI", amount = membershipPackage.Price, infor = "Thông tin đăng ký thành viên", orderinfor = model.PackageId });
-                }
+                return RedirectToAction("Login", "Auth");
             }
             else
             {
                 string errorResponse = await response.Content.ReadAsStringAsync();
                 ModelState.AddModelError("", $"Registration failed: {errorResponse}");
+                return View(model);
             }
-
-            return View(model);
         }
 
         [HttpPost]
@@ -199,7 +184,6 @@ namespace WebIcecream_FE_USER.Controllers
             }
             else
             {
-                // Handle error if needed
                 return false;
             }
         }

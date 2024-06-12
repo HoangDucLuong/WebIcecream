@@ -19,7 +19,6 @@ namespace WebIcecream.Controllers
             _context = context;
         }
 
-        // GET: api/MembershipPackages
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MembershipPackageDTO>>> GetMembershipPackages()
         {
@@ -34,7 +33,6 @@ namespace WebIcecream.Controllers
                 .ToListAsync();
         }
 
-        // GET: api/MembershipPackages/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MembershipPackageDTO>> GetMembershipPackage(int id)
         {
@@ -50,13 +48,12 @@ namespace WebIcecream.Controllers
                 PackageId = package.PackageId,
                 PackageName = package.PackageName,
                 Price = package.Price,
-                DurationDays = (int)package.DurationDays // Assuming DurationDays is part of Packages table
+                DurationDays = (int)package.DurationDays
             };
 
             return packageDTO;
         }
 
-        // POST: api/MembershipPackages
         [HttpPost]
         public async Task<ActionResult<MembershipPackageDTO>> PostMembershipPackage(MembershipPackageDTO packageDTO)
         {
@@ -64,7 +61,7 @@ namespace WebIcecream.Controllers
             {
                 PackageName = packageDTO.PackageName,
                 Price = packageDTO.Price,
-                DurationDays = packageDTO.DurationDays // Assuming DurationDays is part of Packages table
+                DurationDays = packageDTO.DurationDays 
             };
 
             _context.MembershipPackages.Add(membershippackage);
@@ -75,7 +72,7 @@ namespace WebIcecream.Controllers
             return CreatedAtAction(nameof(GetMembershipPackage), new { id = packageDTO.PackageId }, packageDTO);
         }
 
-        // PUT: api/MembershipPackages/5
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMembershipPackage(int id, MembershipPackageDTO packageDTO)
         {
@@ -93,7 +90,7 @@ namespace WebIcecream.Controllers
 
             package.PackageName = packageDTO.PackageName;
             package.Price = packageDTO.Price;
-            package.DurationDays = packageDTO.DurationDays; // Assuming DurationDays is part of Packages table
+            package.DurationDays = packageDTO.DurationDays; 
 
             _context.Entry(package).State = EntityState.Modified;
 
@@ -142,7 +139,7 @@ namespace WebIcecream.Controllers
             return Ok(memberships);
         }
 
-        // DELETE: api/MembershipPackages/5
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMembershipPackage(int id)
         {

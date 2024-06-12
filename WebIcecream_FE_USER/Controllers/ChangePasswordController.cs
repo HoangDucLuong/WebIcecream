@@ -67,7 +67,7 @@ namespace WebIcecream_FE_USER.Controllers
                 return RedirectToAction("Login", "Auth");
             }
             var username = GetUsernameFromToken();
-            ViewBag.Username = username; // Gán tên người dùng vào ViewBag
+            ViewBag.Username = username; 
             return View();
         }
         [HttpPost]
@@ -93,18 +93,16 @@ namespace WebIcecream_FE_USER.Controllers
                     return RedirectToAction("Login", "Auth");
                 }
 
-                model.Username = username; // Thêm username vào model
+                model.Username = username; 
 
-                // Prepare the request payload
                 var jsonModel = JsonConvert.SerializeObject(model);
                 var content = new StringContent(jsonModel, Encoding.UTF8, "application/json");
 
-                // Send the request to the API endpoint
                 HttpResponseMessage response = await _httpClient.PostAsync($"{_httpClient.BaseAddress}/Account/ChangePasswordByUsername", content);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToAction("Details", "User"); // Redirect to member details page after successful password change
+                    return RedirectToAction("Details", "User"); 
                 }
                 else
                 {

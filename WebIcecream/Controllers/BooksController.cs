@@ -28,7 +28,6 @@ namespace WebIcecream.Controllers
             _context = context;
         }
 
-        // GET: api/Books
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BookDTO>>> GetBooks()
         {
@@ -44,7 +43,6 @@ namespace WebIcecream.Controllers
             return Ok(books);
         }
 
-        // GET: api/Books/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BookDTO>> GetBook(int id)
         {
@@ -145,7 +143,6 @@ namespace WebIcecream.Controllers
                 return Ok();
             }
         }
-        // GET: api/Books/SearchBooksByName?name={name}
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BookDTO>>> SearchBooksByName(string name)
         {
@@ -175,7 +172,7 @@ namespace WebIcecream.Controllers
         }
 
 
-        // DELETE: api/Books/5
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
@@ -205,7 +202,7 @@ namespace WebIcecream.Controllers
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
             var filePath = Path.Combine("wwwroot/images", fileName);
 
-            // Create directory if it doesn't exist
+            
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
             using (var stream = new FileStream(filePath, FileMode.Create))

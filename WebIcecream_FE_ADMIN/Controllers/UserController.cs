@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http;
 using System.Text;
 using WebIcecream_FE_ADMIN.Models;
 using X.PagedList;
@@ -11,9 +12,12 @@ namespace WebIcecream_FE_ADMIN.Controllers
     {
         Uri baseAddress = new Uri("https://localhost:7018/api");
         private readonly HttpClient _client;
+        private readonly HttpClient _httpClient;
 
-        public UserController()
+        public UserController(IHttpClientFactory httpClientFactory)
         {
+            _httpClient = httpClientFactory.CreateClient("ApiClient");
+            _httpClient.BaseAddress = new Uri("https://localhost:7018/api/orders/");
             _client = new HttpClient();
             _client.BaseAddress = baseAddress;
         }
@@ -32,33 +36,40 @@ namespace WebIcecream_FE_ADMIN.Controllers
         }
 
 
-        [HttpGet]
-        public IActionResult Index(int? page)
+        public async Task<IActionResult> Index(int? page, string searchString)
         {
-            List<UserViewModel> list = new List<UserViewModel>();
-            HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/User/GetUsers").Result;
-
-            if (response.IsSuccessStatusCode)
+            ViewData["IsLoggedIn"] = true;
+            try
             {
-                string data = response.Content.ReadAsStringAsync().Result;
-                list = JsonConvert.DeserializeObject<List<UserViewModel>>(data);
-
-                // Lọc ra những người dùng có FullName không phải là "admin"
-                list = list.Where(u => u.FullName != "admin").ToList();
-
-                var memberships = GetPackages();
-
-                foreach (var user in list)
+                var response = await _httpClient.GetAsync($"https://localhost:7018/api/User/GetUsers");
+                if (response.IsSuccessStatusCode)
                 {
-                    var package = memberships.FirstOrDefault(p => p.PackageId == user.PackageId);
-                    user.PackageName = package != null ? package.PackageName : "Unknown";
+                    var data = await response.Content.ReadAsStringAsync();
+                    var users = JsonConvert.DeserializeObject<List<UserViewModel>>(data);
+
+                    if (!string.IsNullOrEmpty(searchString))
+                    {
+                        users = users.Where(p => p.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                   
+                    int pageSize = 5; 
+                    int pageNumber = (page ?? 1); 
+
+                    var pagedList = users.ToPagedList(pageNumber, pageSize);
+
+                    return View(pagedList);
+                }
+                else
+                {
+                    return View(new List<UserViewModel>());
                 }
             }
-
-            int pageSize = 5;
-            int pageNumber = (page ?? 1);
-
-            return View(list.ToPagedList(pageNumber, pageSize));
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return View(new List<ProductViewModel>());
+            }
         }
 
         [HttpGet]
@@ -87,6 +98,46 @@ namespace WebIcecream_FE_ADMIN.Controllers
                 return View();
             }
             return View();
+        }
+        public async Task<IActionResult> Search(string searchName, int? page)
+        {
+            try
+            {
+                ViewData["IsLoggedIn"] = true;
+
+                // Validate input
+                if (string.IsNullOrEmpty(searchName))
+                {
+                    return RedirectToAction("Index");
+                }
+
+                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}/Users/SearchUsersByName?name={searchName}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var users = JsonConvert.DeserializeObject<List<UserViewModel>>(data);
+
+                    // Paging logic
+                    int pageSize = 5; // Số lượng sản phẩm trên mỗi trang
+                    int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là 1 nếu không có giá trị page
+
+                    // Chia nhỏ danh sách sản phẩm thành từng trang
+                    var pagedList = users.ToPagedList(pageNumber, pageSize);
+
+                    return View("Index", pagedList);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "No products found matching the search criteria.";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpGet]

@@ -34,9 +34,9 @@ namespace WebIcecream.Controllers
                     Address = m.Address,
                     PaymentStatus = m.PaymentStatus,
                     RegistrationDate = m.RegistrationDate,
-                    IsActive = m.PackageEndDate >= DateTime.Now, // Update IsActive based on PackageEndDate
+                    IsActive = m.PackageEndDate >= DateTime.Now, 
                     PackageId = m.PackageId,
-                    PackageName = m.Package != null ? m.Package.PackageName : null,  // Include PackageName
+                    PackageName = m.Package != null ? m.Package.PackageName : null,  
                     PackageStartDate = m.PackageStartDate,
                     PackageEndDate = m.PackageEndDate
                 })
@@ -61,9 +61,9 @@ namespace WebIcecream.Controllers
                     Address = m.Address,
                     PaymentStatus = m.PaymentStatus,
                     RegistrationDate = m.RegistrationDate,
-                    IsActive = m.PackageEndDate >= DateTime.Now, // Update IsActive based on PackageEndDate
+                    IsActive = m.PackageEndDate >= DateTime.Now, 
                     PackageId = m.PackageId,
-                    PackageName = m.Package != null ? m.Package.PackageName : null,  // Include PackageName
+                    PackageName = m.Package != null ? m.Package.PackageName : null,  
                     PackageStartDate = m.PackageStartDate,
                     PackageEndDate = m.PackageEndDate
                 })
@@ -90,7 +90,7 @@ namespace WebIcecream.Controllers
                 Address = userDto.Address,
                 PaymentStatus = userDto.PaymentStatus,
                 RegistrationDate = userDto.RegistrationDate,
-                IsActive = userDto.PackageEndDate >= DateTime.Now, // Set IsActive based on PackageEndDate
+                IsActive = userDto.PackageEndDate >= DateTime.Now, 
                 PackageId = userDto.PackageId,
                 PackageStartDate = userDto.PackageStartDate,
                 PackageEndDate = userDto.PackageEndDate
@@ -100,7 +100,7 @@ namespace WebIcecream.Controllers
             await _context.SaveChangesAsync();
 
             userDto.UserId = user.UserId;
-            userDto.IsActive = user.IsActive; // Update IsActive in userDto
+            userDto.IsActive = user.IsActive; 
             userDto.PackageName = user.Package != null ? user.Package.PackageName : null;
             userDto.PackageStartDate = user.PackageStartDate;
             userDto.PackageEndDate = user.PackageEndDate;
@@ -122,7 +122,6 @@ namespace WebIcecream.Controllers
                 return NotFound();
             }
 
-            // Update user properties
             user.FullName = userDto.FullName;
             user.Email = userDto.Email;
             user.PhoneNumber = userDto.PhoneNumber;
@@ -131,12 +130,11 @@ namespace WebIcecream.Controllers
             user.Address = userDto.Address;
             user.PaymentStatus = userDto.PaymentStatus;
             user.RegistrationDate = userDto.RegistrationDate;
-            user.IsActive = userDto.PackageEndDate >= DateTime.Now; // Set IsActive based on PackageEndDate
+            user.IsActive = userDto.PackageEndDate >= DateTime.Now; 
             user.PackageId = userDto.PackageId;
             user.PackageStartDate = userDto.PackageStartDate;
             user.PackageEndDate = userDto.PackageEndDate;
 
-            // Save changes to the database
             _context.Entry(user).State = EntityState.Modified;
             try
             {
@@ -156,6 +154,40 @@ namespace WebIcecream.Controllers
 
             return NoContent();
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> SearchUsersByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Name parameter is required.");
+            }
+
+            var users = await _context.Users
+                .Where(b => b.FullName.Contains(name))
+                .Select(b => new UserDTO
+                {
+                    FullName = b.FullName,
+                    Email = b.Email,
+                    PhoneNumber = b.PhoneNumber,
+                    Gender = b.Gender,
+                    Dob = b.Dob,
+                    Address = b.Address,
+                    PaymentStatus = b.PaymentStatus,
+                    RegistrationDate = b.RegistrationDate,
+                    IsActive = b.PackageEndDate >= DateTime.Now, 
+                    PackageId = b.PackageId,
+                    PackageStartDate = b.PackageStartDate,
+                    PackageEndDate = b.PackageEndDate
+                })
+                .ToListAsync();
+
+            if (users == null || users.Count == 0)
+            {
+                return NotFound("No user found with the provided name.");
+            }
+
+            return Ok(users);
+        }
 
         [HttpPost("{userId}")]
         public async Task<IActionResult> RenewMembership(int userId, RenewMembershipDTO model)
@@ -167,8 +199,8 @@ namespace WebIcecream.Controllers
             }
 
             user.PackageId = model.PackageId;
-            user.PackageStartDate = DateTime.UtcNow; // Assuming renewal starts from now
-            user.PackageEndDate = DateTime.UtcNow.AddYears(1); // Assuming a 1-year membership
+            user.PackageStartDate = DateTime.UtcNow; 
+            user.PackageEndDate = DateTime.UtcNow.AddYears(1); 
 
             _context.Update(user);
             await _context.SaveChangesAsync();

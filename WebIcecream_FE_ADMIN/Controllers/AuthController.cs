@@ -14,7 +14,6 @@ namespace WebIcecream_FE_ADMIN.Controllers
             _httpClient.BaseAddress = new Uri("https://localhost:7018/api/Auth/");
         }
 
-        // Hiển thị form đăng nhập
         public IActionResult Login()
         {
 
@@ -38,20 +37,17 @@ namespace WebIcecream_FE_ADMIN.Controllers
                 string data = await response.Content.ReadAsStringAsync();
                 var token = JsonConvert.DeserializeObject<TokenResponse>(data);
 
-                // Kiểm tra vai trò của người dùng
                 var userRoleId = GetUserRoleIdFromToken(token.Token);
 
-                // Lưu token vào session hoặc cookie
                 if (userRoleId == 2)
                     HttpContext.Session.SetString("Token", token.Token);
 
-                // Kiểm tra xem vai trò có phù hợp không
                 if (userRoleId == 2)
                 {
-                    // Cập nhật trạng thái đăng nhập sau khi đăng nhập thành công
+
                     ViewData["IsLoggedIn"] = true; 
 
-                    return RedirectToAction("Index", "User"); // Chuyển hướng đến trang chính sau khi đăng nhập thành công
+                    return RedirectToAction("Index", "User"); 
                 }
                 else
                 {
@@ -70,12 +66,10 @@ namespace WebIcecream_FE_ADMIN.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            // Gửi yêu cầu đến endpoint 'logout' của API backend để đăng xuất
             HttpResponseMessage response = await _httpClient.PostAsync("Logout/logout", null);
 
             if (response.IsSuccessStatusCode)
             {
-                // Xóa token từ session hoặc cookie
                 HttpContext.Session.Remove("Token");
             }
 
@@ -83,7 +77,6 @@ namespace WebIcecream_FE_ADMIN.Controllers
         }
         private int? GetUserRoleIdFromToken(string token)
         {
-            //var token = HttpContext.Session.GetString("Token");
 
             if (!string.IsNullOrEmpty(token))
             {
